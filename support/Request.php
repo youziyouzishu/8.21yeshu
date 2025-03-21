@@ -18,6 +18,10 @@ namespace support;
  * Class Request
  * @package support
  * @property int $user_id 用户ID
+ * @property string $lat 当前纬度
+ * @property string $lng 当前经度
+ * @property string $client_type 客户端类型 #user=用户端,transport=配送端,driver=司机端
+ * @property string $openid 微信唯一标识
  */
 class Request extends \Webman\Http\Request
 {

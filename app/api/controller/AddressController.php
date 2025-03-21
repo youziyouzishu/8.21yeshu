@@ -2,7 +2,10 @@
 
 namespace app\api\controller;
 
+use app\admin\model\Area;
+use app\admin\model\DeliveryConfig;
 use app\admin\model\UsersAddress;
+use app\admin\model\Warehouse;
 use app\api\basic\Base;
 use support\Request;
 
@@ -12,7 +15,7 @@ class AddressController extends Base
     /**
      * 添加地址
      */
-    function add(Request $request)
+    function insert(Request $request)
     {
         $name = $request->post('name');
         $mobile = $request->post('mobile');
@@ -21,15 +24,19 @@ class AddressController extends Base
         $region = $request->post('region');
         $detail = $request->post('detail');
         $default = $request->post('default', 0);
+        $lat = $request->post('lat');
+        $lng = $request->post('lng');
         $data = [
+            'user_id' => $request->user_id,
             'name' => $name,
             'mobile' => $mobile,
             'province' => $province,
             'city' => $city,
             'region' => $region,
             'detail' => $detail,
-            'user_id' => $request->user_id,
             'default' => $default,
+            'lat'=> $lat,
+            'lng'=> $lng,
         ];
 
         if ($data['default'] == 0) {
@@ -81,22 +88,35 @@ class AddressController extends Base
     /**
      * 编辑地址
      */
-    function edit(Request $request)
+    function update(Request $request)
     {
         $address_id = $request->post('address_id');
+        $name = $request->post('name');
+        $mobile = $request->post('mobile');
+        $province = $request->post('province');
+        $city = $request->post('city');
+        $region = $request->post('region');
+        $detail = $request->post('detail');
+        $default = $request->post('default', 0);
+        $lat = $request->post('lat');
+        $lng = $request->post('lng');
+
+
         $row = UsersAddress::find($address_id);
         if (!$row) {
             return $this->fail('地址不存在');
         }
 
         $fieldsToUpdate = [
-            'name' => $request->post('name'),
-            'mobile' => $request->post('mobile'),
-            'province' => $request->post('province'),
-            'city' => $request->post('city'),
-            'region' => $request->post('region'),
-            'detail' => $request->post('detail'),
-            'default' => $request->post('default', 0),
+            'name' => $name,
+            'mobile' => $mobile,
+            'province' => $province,
+            'city' => $city,
+            'region' => $region,
+            'detail' => $detail,
+            'default' => $default,
+            'lat'=> $lat,
+            'lng'=> $lng,
         ];
 
         if ($fieldsToUpdate['default'] == 1) {
@@ -125,12 +145,37 @@ class AddressController extends Base
     /**
      * 地址列表
      */
-    function list(Request $request)
+    function select(Request $request)
     {
+        $warehouses = Warehouse::all();
+        if ($warehouses->isEmpty()) {
+            return $this->fail('没有可用的仓库');
+        }
+
+        $minDistance = PHP_FLOAT_MAX;
+        $maxDeliveryDistance = DeliveryConfig::max('end'); // 最大配送距离
+        if (!$maxDeliveryDistance) {
+            return $this->fail('未配置最大距离');
+        }
         $rows = UsersAddress::where(['user_id' => $request->user_id])
             ->orderByDesc('id')
             ->paginate()
             ->items();
+        foreach ($rows as $row){
+            $closestWarehouse = null;
+            foreach ($warehouses as $warehouse) {
+                $distance = Area::getDistanceFromLngLat($row->lng, $row->lat, $warehouse->lng, $warehouse->lat);
+                if ($distance < $minDistance && $distance <= $maxDeliveryDistance) {
+                    $minDistance = $distance;
+                    $closestWarehouse = $warehouse;
+                }
+            }
+            if (!$closestWarehouse) {
+                $row->lock = true;
+            }else{
+                $row->lock = false;
+            }
+        }
         return $this->success('成功', $rows);
     }
 

@@ -35,6 +35,7 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
  * @property string|null $mobile 手机
+ * @property string $unionid 开放平台标识
  * @mixin \Eloquent
  */
 class User extends Base
@@ -76,7 +77,36 @@ class User extends Base
         'status',
         'openid',
         'client_type',
+        'unionid',
     ];
+
+
+    /**
+     * 变更用户余额
+     * @param float $money 金额
+     * @param int $user_id 用户ID
+     * @param string $memo 备注
+     * @throws \Throwable
+     */
+    public static function money($money, $user_id, $memo)
+    {
+        Db::connection('plugin.admin.mysql')->beginTransaction();
+        try {
+            $user = self::lockForUpdate()->find($user_id);
+            if ($user && $money != 0) {
+                $before = $user->money;
+                $after = function_exists('bcadd') ? bcadd($user->money, $money, 2) : $user->money + $money;
+                //更新会员信息
+                $user->money = $after;
+                $user->save();
+                //写入日志
+                UsersMoneyLog::create(['user_id' => $user_id, 'money' => $money, 'before' => $before, 'after' => $after, 'memo' => $memo]);
+            }
+            Db::connection('plugin.admin.mysql')->commit();
+        } catch (\Throwable $e) {
+            Db::connection('plugin.admin.mysql')->rollback();
+        }
+    }
 
 
 

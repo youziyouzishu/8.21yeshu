@@ -3,9 +3,7 @@
 namespace app\admin\model;
 
 
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use plugin\admin\app\model\Base;
-use support\Db;
 
 /**
  * 
@@ -27,6 +25,8 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goods newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goods query()
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\Shopcar> $shopcar
+ * @property-read mixed $type_text
+ * @property int $category_id 分类
  * @mixin \Eloquent
  */
 class Goods extends Base
@@ -36,7 +36,7 @@ class Goods extends Base
      *
      * @var string
      */
-    protected $table = 'wa_privacy';
+    protected $table = 'wa_goods';
 
     /**
      * The primary key associated with the table.

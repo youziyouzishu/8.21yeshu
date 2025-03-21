@@ -21,6 +21,7 @@ class AccountController extends Base
      */
     function login(Request $request)
     {
+
         $code = $request->post('code');
         $client_type = $request->post('client_type');#user=用户端,transport=配送端,driver=司机端
         if (!in_array($client_type, ['user', 'transport', 'driver'])) {
@@ -28,11 +29,14 @@ class AccountController extends Base
         }
         try {
             $app = new Application(config('wechat'));
-            $res = $app->getUtils()->codeToSession($code);
-            $openid = $res['openid'];
+            $ret = $app->getUtils()->codeToSession($code);
+            $openid = $ret['openid'];
+            $unionid = $ret['unionid'];
+
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
         }
+
         $user = User::where(['openid' => $openid, 'client_type' => $client_type])->first();
         if (!$user) {
             $user = User::create([
@@ -43,13 +47,14 @@ class AccountController extends Base
                 'last_time' => Carbon::now()->toDateTimeString(),
                 'last_ip' => $request->getRealIp(),
                 'openid' => $openid,
+                'unionid' => $unionid,
                 'client_type' => $client_type,
             ]);
         }
         $token = JwtToken::generateToken([
             'id' => $user->id,
+            'openid' => $openid,
             'client_type' => $client_type,
-            'client' => JwtToken::TOKEN_CLIENT_MOBILE
         ]);
         return $this->success('登录成功', ['user' => $user, 'token' => $token]);
     }

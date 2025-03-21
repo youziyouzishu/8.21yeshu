@@ -2,12 +2,10 @@
 
 namespace app\api\controller;
 
-use app\admin\model\Area;
-use app\admin\model\DeliveryConfig;
-use app\admin\model\UsersAddress;
-use app\admin\model\Warehouse;
+use app\admin\model\Shopcar;
 use app\api\basic\Base;
 use support\Request;
+use Webman\Exception\BusinessException;
 
 class IndexController extends Base
 {
@@ -16,9 +14,16 @@ class IndexController extends Base
 
     function index(Request $request)
     {
+        $coupons = Shopcar::all();
+        $coupon = $coupons->firstWhere('id', 2);
+        if (!$coupon){
+            return $this->fail('无效优惠券');
+        }
 
-        dump(md5(123456));
 
+        return $this->success('ok');
     }
+
+
 
 }
