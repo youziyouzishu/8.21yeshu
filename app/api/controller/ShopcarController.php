@@ -48,7 +48,7 @@ class ShopcarController extends Base
     }
 
     #获取购物车列表
-    function getShopcarList(Request $request)
+    function select(Request $request)
     {
         $shopcars = Shopcar::where(['user_id' => $request->user_id])->with(['goods'])->get();
         $total_amount = 0;

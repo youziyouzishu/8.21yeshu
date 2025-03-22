@@ -19,7 +19,7 @@ use support\Db;
  * @property string $region 区
  * @property string $mobile 手机号
  * @property string $name 姓名
- * @property string $detail 详细地址
+ * @property string $address 详细地址
  * @property \Illuminate\Support\Carbon|null $created_at 创建时间
  * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
  * @property \Illuminate\Support\Carbon|null $deleted_at 删除时间
@@ -60,7 +60,7 @@ class UsersAddress extends Base
         'region',
         'mobile',
         'name',
-        'detail',
+        'address',
         'lat',
         'lng',
     ];

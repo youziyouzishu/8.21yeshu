@@ -29,18 +29,18 @@ class GoodsController extends Base
         $rows = Category::all();
         return $this->success('成功', $rows);
     }
-    
+
     #提交服务
-    function addService(Request $request)
+    function serviceAdd(Request $request)
     {
         $type = $request->post('type');#类型:1=水机维修,2=水机清洗
-        $user_address_id = $request->post('user_address_id');
+        $address_id = $request->post('address_id');
         $visit_time = $request->post('visit_time');
         $image = $request->post('image');
         $mark = $request->post('mark');
         PrivacyService::create([
             'user_id' => $request->user_id,
-            'user_address_id' => $user_address_id,
+            'address_id' => $address_id,
             'type' => $type,
             'visit_time' => $visit_time,
             'image' => $image,
@@ -63,8 +63,6 @@ class GoodsController extends Base
         $order = $request->post('order');#排序:1=综合,2=销量升序,3=销量降序,4=价格升序,5=价格降序,6=最新
         $type = $request->post('type');#类型:1=水机直购,2=水机租赁,3=桶装水
         $category_id = $request->post('category_id');
-
-
         $warehouses = Warehouse::all();
         if ($warehouses->isEmpty()) {
             return $this->fail('没有可用的仓库');
@@ -119,18 +117,16 @@ class GoodsController extends Base
             ->paginate()
             ->items();
         foreach ($rows as $row) {
-            $row->setAttribute('freight',$freight);
+            $row->setAttribute('freight', $freight);
         }
         return $this->success('成功', $rows);
     }
 
     #商品详情
-    function getGoodsDetail(Request $request)
+    function detail(Request $request)
     {
-        $goods_id = $request->post('goods_id');
-        // 查询Privacy
-        $row = Goods::find($goods_id);
-        // 检查当前用户是否收藏了该Privacy
+        $id = $request->post('id');
+        $row = Goods::find($id);
         $row->setAttribute('is_collected', $row->collect()->where('user_id', $request->user_id)->exists());
         return $this->success('成功', $row);
     }
@@ -138,8 +134,8 @@ class GoodsController extends Base
     #收藏
     function collect(Request $request)
     {
-        $privacy_id = $request->post('privacy_id');
-        $row = Goods::find($privacy_id);
+        $id = $request->post('id');
+        $row = Goods::find($id);
         $collect = $row->collect()->where(['user_id' => $request->user_id])->first();
         if ($collect) {
             $collect->delete();
@@ -247,13 +243,13 @@ class GoodsController extends Base
         $shopcar_ids = $request->post('shopcar_ids');
         $coupon_id = $request->post('coupon_id');
         $delivery_type = $request->post('delivery_type');#配送类型:1=立即配送,2=预约配送
-        $delivery_time = $request->post('delivery_time','');#配送时间
-        $mark = $request->post('mark','');
-        $invoice_id = $request->post('invoice_id',0);
+        $delivery_time = $request->post('delivery_time', '');#配送时间
+        $mark = $request->post('mark', '');
+        $invoice_id = $request->post('invoice_id', 0);
         if (empty($shopcar_ids)) {
             return $this->fail('请选择商品');
         }
-        if (empty($delivery_type)){
+        if (empty($delivery_type)) {
             return $this->fail('请选择配送类型');
         }
         $address = UsersAddress::find($address_id);
@@ -278,32 +274,33 @@ class GoodsController extends Base
             }
         }
         if ($closestWarehouse) {
-            $distance = round($minDistance, 2);
-            $freight = DeliveryConfig::where('start', '<=', $distance)->where('end', '>=', $distance)->first()->price;
-            $shopcars = Shopcar::where(['user_id' => $request->user_id])->whereIn('id', $shopcar_ids)->get();
-            $total_goods_amount = 0;
-            $coupon_amount = 0;
-            $sub_data = [];
-            foreach ($shopcars as $shopcar) {
-                $goods_amount = $shopcar->goods->price * $shopcar->num;
-                $total_goods_amount += $goods_amount;
-                $sub_data[] = [
-                    'goods_id' => $shopcar->goods_id,
-                    'num' => $shopcar->num,
-                    'amount' => $shopcar->goods->price,
-                    'total_amount' => $goods_amount,
-                ];
-            }
-            $pay_amount = $total_goods_amount + $freight;
-            $coupons = UsersCoupon::where(['user_id' => $request->user_id, 'status' => 1])
-                ->where(function ($query) use ($pay_amount) {
-                    $query->where('type', 1)->orWhere(function ($query) use ($pay_amount) {
-                        $query->where('type', 2)->where('with_amount', '<=', $pay_amount);
-                    });
-                })
-                ->get();
             Db::connection('plugin.admin.mysql')->beginTransaction();
             try {
+                $distance = round($minDistance, 2);
+                $freight = DeliveryConfig::where('start', '<=', $distance)->where('end', '>=', $distance)->first()->price;
+                $shopcars = Shopcar::where(['user_id' => $request->user_id])->whereIn('id', $shopcar_ids)->get();
+                $total_goods_amount = 0;
+                $coupon_amount = 0;
+                $sub_data = [];
+                foreach ($shopcars as $shopcar) {
+                    $goods_amount = $shopcar->goods->price * $shopcar->num;
+                    $total_goods_amount += $goods_amount;
+                    $sub_data[] = [
+                        'goods_id' => $shopcar->goods_id,
+                        'num' => $shopcar->num,
+                        'amount' => $shopcar->goods->price,
+                        'total_amount' => $goods_amount,
+                    ];
+                    $shopcar->delete();
+                }
+                $pay_amount = $total_goods_amount + $freight;
+                $coupons = UsersCoupon::where(['user_id' => $request->user_id, 'status' => 1])
+                    ->where(function ($query) use ($pay_amount) {
+                        $query->where('type', 1)->orWhere(function ($query) use ($pay_amount) {
+                            $query->where('type', 2)->where('with_amount', '<=', $pay_amount);
+                        });
+                    })
+                    ->get();
                 if (!empty($coupon_id)) {
                     $coupon = $coupons->firstWhere('id', 1);
                     if (!$coupon) {

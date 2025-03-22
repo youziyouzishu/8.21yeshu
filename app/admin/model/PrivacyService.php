@@ -13,7 +13,7 @@ use support\Db;
  * @property int $id 主键
  * @property int $user_id 用户
  * @property int $type 类型:1=水机维修,2=水机清洗
- * @property int $user_address_id 地址
+ * @property int $address_id 地址
  * @property string $visit_time 上门时间
  * @property string $image 图片
  * @property string $mark 备注
@@ -45,7 +45,7 @@ class PrivacyService extends Base
     protected $fillable = [
         'user_id',
         'type',
-        'user_address_id',
+        'address_id',
         'visit_time',
         'image',
         'mark',

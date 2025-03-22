@@ -54,8 +54,8 @@ class InvoiceController extends Base
 
     function delete(Request $request)
     {
-        $id = $request->post('id');
-        UsersInvoice::where(['id' => $id])->delete();
+        $ids = $request->post('ids');
+        UsersInvoice::destroy($ids);
         return $this->success();
     }
 
@@ -74,5 +74,14 @@ class InvoiceController extends Base
         UsersInvoice::where(['user_id' => $request->user_id])->update(['default' => 0]);
         UsersInvoice::where(['id' => $id])->update(['default' => 1]);
         return $this->success();
+    }
+
+    /**
+     * 获取默认
+     */
+    function getDefault(Request $request)
+    {
+        $row = UsersInvoice::where(['user_id' => $request->user_id, 'default' => 1])->first();
+        return $this->success('成功', $row);
     }
 }

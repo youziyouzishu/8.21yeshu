@@ -11,7 +11,7 @@ class CommonController extends Base
 {
     protected array $noNeedLogin = ['*'];
 
-    #获取省市
+    #获取省
     function getProvince(Request $request)
     {
         $row = Area::where('level', 1)->get();
@@ -21,20 +21,20 @@ class CommonController extends Base
     #获取城市
     function getCity(Request $request)
     {
-        $province_id = $request->post('province_id');
-        $row = Area::where('level', 2)->where('pid', $province_id)->get();
+        $pid = $request->post('pid');
+        $row = Area::where('level', 2)->where('pid', $pid)->get();
         return $this->success('请求成功', $row);
     }
 
-    #获取当前位置的区
+    #获取区
     function getDistrict(Request $request)
     {
-        $city_id = $request->post('city_id');
-        $row = Area::where('level', 3)->where('pid', $city_id)->get();
+        $pid = $request->post('pid');
+        $row = Area::where('level', 3)->where('pid', $pid)->get();
         return $this->success('请求成功', $row);
     }
 
-    #获取当前位置的城市
+    #根据经纬度获取市
     function getCityFromLngLat(Request $request)
     {
         $lng = $request->post('lng');

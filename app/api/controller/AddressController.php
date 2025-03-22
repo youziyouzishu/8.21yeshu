@@ -22,7 +22,7 @@ class AddressController extends Base
         $province = $request->post('province');
         $city = $request->post('city');
         $region = $request->post('region');
-        $detail = $request->post('detail');
+        $address = $request->post('address');
         $default = $request->post('default', 0);
         $lat = $request->post('lat');
         $lng = $request->post('lng');
@@ -33,7 +33,7 @@ class AddressController extends Base
             'province' => $province,
             'city' => $city,
             'region' => $region,
-            'detail' => $detail,
+            'address' => $address,
             'default' => $default,
             'lat'=> $lat,
             'lng'=> $lng,
@@ -57,9 +57,9 @@ class AddressController extends Base
      */
     function setDefault(Request $request)
     {
-        $address_id = $request->post('address_id');
+        $id = $request->post('id');
         UsersAddress::where(['user_id' => $request->user_id])->update(['default' => 0]);
-        UsersAddress::where(['id' => $address_id])->update(['default' => 1]);
+        UsersAddress::where(['id' => $id])->update(['default' => 1]);
         return $this->success();
     }
 
@@ -73,12 +73,12 @@ class AddressController extends Base
     }
 
     /**
-     * 获取指定地址
+     * 详情
      */
-    function get(Request $request)
+    function detail(Request $request)
     {
-        $address_id = $request->post('address_id');
-        $row = UsersAddress::find($address_id);
+        $id = $request->post('id');
+        $row = UsersAddress::find($id);
         if (!$row) {
             return $this->fail('地址不存在');
         }
@@ -86,23 +86,23 @@ class AddressController extends Base
     }
 
     /**
-     * 编辑地址
+     * 更新
      */
     function update(Request $request)
     {
-        $address_id = $request->post('address_id');
+        $id = $request->post('id');
         $name = $request->post('name');
         $mobile = $request->post('mobile');
         $province = $request->post('province');
         $city = $request->post('city');
         $region = $request->post('region');
-        $detail = $request->post('detail');
+        $address = $request->post('address');
         $default = $request->post('default', 0);
         $lat = $request->post('lat');
         $lng = $request->post('lng');
 
 
-        $row = UsersAddress::find($address_id);
+        $row = UsersAddress::find($id);
         if (!$row) {
             return $this->fail('地址不存在');
         }
@@ -113,7 +113,7 @@ class AddressController extends Base
             'province' => $province,
             'city' => $city,
             'region' => $region,
-            'detail' => $detail,
+            'address' => $address,
             'default' => $default,
             'lat'=> $lat,
             'lng'=> $lng,
@@ -129,16 +129,12 @@ class AddressController extends Base
     }
 
     /**
-     * 删除地址
+     * 删除
      */
     function delete(Request $request)
     {
-        $address_id = $request->post('address_id');
-        $row = UsersAddress::where(['user_id' => $request->user_id])->find($address_id);
-        if (!$row) {
-            return $this->fail('地址不存在');
-        }
-        $row->delete();
+        $ids = $request->post('ids');
+        UsersAddress::where(['user_id' => $request->user_id])->destroy($ids);
         return $this->success();
     }
 

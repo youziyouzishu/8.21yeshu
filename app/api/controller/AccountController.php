@@ -12,7 +12,7 @@ use Tinywan\Jwt\JwtToken;
 
 class AccountController extends Base
 {
-    protected array $noNeedLogin = ['login', 'register'];
+    protected array $noNeedLogin = ['login'];
 
     /**
      * 登录

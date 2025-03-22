@@ -49,8 +49,8 @@ class CouponController extends Base
                 'expired_at' => $expired_at->toDateTimeString(),
             ]);
             Client::send('job', ['event' => 'user_coupon_expire', 'id' => $user_coupon->id], $expired_at->timestamp - time());
-            return $this->success('成功');
         }
+        return $this->success('成功');
     }
 
 
