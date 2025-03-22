@@ -8,11 +8,11 @@ return [
             // 服务器地址
             'hostname' => '122.114.74.62',
             // 数据库名
-            'database' => '8_21yeshu_62_hzg',
+            'database' => '0821yeshu_62_hzg',
             // 数据库用户名
-            'username' => '8_21yeshu_62_hzg',
+            'username' => '0821yeshu_62_hzg',
             // 数据库密码
-            'password' => 'y1SaTFXCRBJskSmR',
+            'password' => 'rEhnMEKsEr9Hb6Bb',
             // 数据库连接端口
             'hostport' => 3306,
             // 数据库连接参数
