@@ -33,6 +33,7 @@ class Coupon extends Base
     /**
      * The table associated with the model.
      *
+     *
      * @var string
      */
     protected $table = 'wa_coupon';
@@ -44,29 +45,14 @@ class Coupon extends Base
      */
     protected $primaryKey = 'id';
 
+    protected $appends = ['type_text'];
 
 
-    public static function getCouponAmount($amount,$coupon_id)
+    function getTypeTextAttribute($value)
     {
-        $coupon_amount = 0;
-        if (!empty($coupon_id)) {
-            $usercoupon = UsersCoupon::where(['id' => $coupon_id])->first();
-            if (empty($usercoupon)) {
-                throw new \Exception('优惠券不存在', 1);
-            }
-            if ($usercoupon->user_id != JwtToken::getCurrentId()) {
-                throw new \Exception('优惠券不正确', 1);
-            }
-            if ($usercoupon->status != 1) {
-                throw new \Exception('优惠券不存在', 1);
-
-            }
-            if ($usercoupon->type == 2 && $usercoupon->with_amount > $amount) {
-                throw new \Exception('不满足满减条件', 1);
-            }
-            $coupon_amount = $usercoupon->amount;
-        }
-        return $coupon_amount;
+        $value = $value ?: ($this->type ?? '');
+        $list = ['1' => '无门槛', '2' => '满减'];
+        return $list[$value] ?? '';
     }
 
 

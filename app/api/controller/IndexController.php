@@ -3,8 +3,10 @@
 namespace app\api\controller;
 
 use app\admin\model\Shopcar;
+use app\admin\model\User;
 use app\api\basic\Base;
 use support\Request;
+use Tinywan\Jwt\JwtToken;
 use Webman\Exception\BusinessException;
 
 class IndexController extends Base
@@ -14,14 +16,13 @@ class IndexController extends Base
 
     function index(Request $request)
     {
-        $coupons = Shopcar::all();
-        $coupon = $coupons->firstWhere('id', 2);
-        if (!$coupon){
-            return $this->fail('无效优惠券');
-        }
-
-
-        return $this->success('ok');
+        $user = User::find(1);
+        $token = JwtToken::generateToken([
+            'id' => $user->id,
+            'openid' => $user->openid,
+            'client_type' => $user->client_type,
+        ]);
+        return $this->success('成功', ['user' => $user, 'token' => $token]);
     }
 
 

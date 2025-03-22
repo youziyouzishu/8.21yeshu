@@ -46,6 +46,16 @@ class UsersCoupon extends Base
 
     protected $fillable = ['coupon_id','user_id','name','type','amount','with_amount','expired_at','status'];
 
+    protected $appends = ['type_text'];
+
+
+    function getTypeTextAttribute($value)
+    {
+        $value = $value ?: ($this->type ?? '');
+        $list = ['1' => '无门槛', '2' => '满减'];
+        return $list[$value] ?? '';
+    }
+
 
 
 

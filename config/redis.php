@@ -17,7 +17,7 @@ return [
         'password' => '123456',
         'host' => '122.114.74.62',
         'port' => 6379,
-        'database' => 0,
+        'database' => 3,
         // Connection pool, supports only Swoole or Swow drivers.
         'pool' => [
             'max_connections' => 5,

@@ -28,10 +28,10 @@ class AccountController extends Base
             return $this->fail('客户端类型错误');
         }
         try {
-            $app = new Application(config('wechat'));
+            $app = new Application(config('wechat.UserMiniApp'));
             $ret = $app->getUtils()->codeToSession($code);
             $openid = $ret['openid'];
-            $unionid = $ret['unionid'];
+            $unionid = '123456';
 
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
