@@ -120,7 +120,7 @@ class AddressController extends Base
         ];
 
         if ($fieldsToUpdate['default'] == 1) {
-            UsersAddress::where(['user_id' => $request->user_id])->update(['default' => 0]);
+            UsersAddress::where(['user_id' => $request->user_id, 'default' => 1])->where('id', '!=', $id)->update(['default' => 0]);
         }
 
         $row->fill($fieldsToUpdate);

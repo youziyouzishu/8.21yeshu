@@ -31,8 +31,8 @@ return [
         ],
     ],
     'UserMiniApp'=>[
-        'app_id' => 'wxd967cd55cae0d068',
-        'secret' => '3d7fedbddcf5ec025ec0a5d49172a418',
+        'app_id' => 'wx2520601c08256651',
+        'secret' => '72196b128ca22020c0308349128d4425',
         'token' => 'easywechat',
         'aes_key' => '......',
         /**

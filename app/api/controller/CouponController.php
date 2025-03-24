@@ -11,7 +11,7 @@ use Webman\RedisQueue\Client;
 
 class CouponController extends Base
 {
-    protected array $noNeedLogin = ['select'];
+    protected array $noNeedLogin = [];
 
     function select(Request $request)
     {
