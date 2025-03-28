@@ -24,6 +24,8 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService query()
  * @property-read mixed $status_text
+ * @property-read \app\admin\model\UsersAddress|null $address
+ * @property-read \app\admin\model\User|null $user
  * @mixin \Eloquent
  */
 class PrivacyService extends Base
@@ -56,13 +58,28 @@ class PrivacyService extends Base
     function getStatusTextAttribute($value)
     {
         $value = $value ?? $this->status;
-        $list = [
+        $list = $this->getStatusList();
+        return $list[$value] ?? '';
+    }
+
+    function getStatusList()
+    {
+        return [
             1 => '待受理',
             2 => '已受理',
             3 => '已取消',
             4 => '已完成',
         ];
-        return $list[$value] ?? '';
+    }
+
+    function address()
+    {
+        return $this->belongsTo(UsersAddress::class, 'address_id', 'id');
+    }
+
+    function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
 

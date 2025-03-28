@@ -30,33 +30,6 @@ class GoodsController extends Base
         return $this->success('成功', $rows);
     }
 
-    #提交服务
-    function serviceAdd(Request $request)
-    {
-        $type = $request->post('type');#类型:1=水机维修,2=水机清洗
-        $address_id = $request->post('address_id');
-        $visit_time = $request->post('visit_time');
-        $image = $request->post('image');
-        $mark = $request->post('mark');
-        PrivacyService::create([
-            'user_id' => $request->user_id,
-            'address_id' => $address_id,
-            'type' => $type,
-            'visit_time' => $visit_time,
-            'image' => $image,
-            'mark' => $mark,
-        ]);
-        return $this->success();
-    }
-
-    #获取服务列表
-    function getServiceList(Request $request)
-    {
-        $type = $request->post('type');#类型:1=水机维修,2=水机清洗
-        $rows = PrivacyService::where(['user_id' => $request->user_id, 'type' => $type])->orderByDesc('id')->paginate()->items();
-        return $this->success('成功', $rows);
-    }
-
     #商品列表
     function select(Request $request)
     {

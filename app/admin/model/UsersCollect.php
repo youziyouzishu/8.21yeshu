@@ -19,6 +19,8 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersCollect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersCollect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersCollect query()
+ * @property-read \app\admin\model\Goods|null $goods
+ * @property-read \app\admin\model\User|null $user
  * @mixin \Eloquent
  */
 class UsersCollect extends Base
@@ -42,5 +44,14 @@ class UsersCollect extends Base
         'goods_id',
     ];
 
+    function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    function goods()
+    {
+        return $this->belongsTo(Goods::class, 'goods_id', 'id');
+    }
 
 }

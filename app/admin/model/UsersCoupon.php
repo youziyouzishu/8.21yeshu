@@ -25,6 +25,7 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersCoupon newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersCoupon query()
  * @property int $coupon_id 优惠券
+ * @property-read mixed $type_text
  * @mixin \Eloquent
  */
 class UsersCoupon extends Base

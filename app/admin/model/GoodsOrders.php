@@ -32,7 +32,7 @@ use support\Db;
  * @property string $delivery_time 配送时间
  * @property int $invoice_id 发票
  * @property int $pay_type 支付类型:1=微信,2=余额
- * @property string|null $pay_time 支付时间
+ * @property \Illuminate\Support\Carbon|null $pay_time 支付时间
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
@@ -50,6 +50,10 @@ class GoodsOrders extends Base
      * @var string
      */
     protected $primaryKey = 'id';
+
+    protected $casts = [
+        'pay_time' => 'datetime:Y-m-d H:i:s',
+    ];
 
     protected $fillable = [
         'user_id',

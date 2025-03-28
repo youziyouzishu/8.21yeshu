@@ -7,6 +7,7 @@ use app\admin\model\DeliveryConfig;
 use app\admin\model\UsersAddress;
 use app\admin\model\Warehouse;
 use app\api\basic\Base;
+use support\Db;
 use support\Request;
 
 class AddressController extends Base
@@ -35,8 +36,8 @@ class AddressController extends Base
             'region' => $region,
             'address' => $address,
             'default' => $default,
-            'lat'=> $lat,
-            'lng'=> $lng,
+            'lat' => $lat,
+            'lng' => $lng,
         ];
 
         if ($data['default'] == 0) {
@@ -58,7 +59,7 @@ class AddressController extends Base
     function setDefault(Request $request)
     {
         $id = $request->post('id');
-        UsersAddress::where(['user_id' => $request->user_id,'default' => 1])->update(['default' => 0]);
+        UsersAddress::where(['user_id' => $request->user_id, 'default' => 1])->where('id','<>',$id)->update(['default' => 0]);
         UsersAddress::where(['id' => $id])->update(['default' => 1]);
         return $this->success();
     }
@@ -107,24 +108,32 @@ class AddressController extends Base
             return $this->fail('地址不存在');
         }
 
-        $fieldsToUpdate = [
-            'name' => $name,
-            'mobile' => $mobile,
-            'province' => $province,
-            'city' => $city,
-            'region' => $region,
-            'address' => $address,
-            'default' => $default,
-            'lat'=> $lat,
-            'lng'=> $lng,
-        ];
 
-        if ($fieldsToUpdate['default'] == 1) {
-            UsersAddress::where(['user_id' => $request->user_id, 'default' => 1])->where('id', '!=', $id)->update(['default' => 0]);
-        }
-
-        $row->fill($fieldsToUpdate);
-        $row->save();
+        // 使用事务管理
+        Db::connection('plugin.admin.mysql')->transaction(function () use ($request, $row, $name, $mobile, $province, $city, $region, $address, $default, $lat, $lng) {
+            // 删除旧记录并创建新记录
+            $row->delete();
+            $newRow = UsersAddress::create([
+                'user_id' => $request->user_id,
+                'name' => $name,
+                'mobile' => $mobile,
+                'province' => $province,
+                'city' => $city,
+                'region' => $region,
+                'address' => $address,
+                'default' => $default,
+                'lat' => $lat,
+                'lng' => $lng,
+            ]);
+            // 如果设置为默认地址，则将其他默认地址取消
+            if ($default == 1) {
+                UsersAddress::where([
+                    ['user_id', $request->user_id],
+                    ['default', 1],
+                    ['id', '<>', $newRow->id]
+                ])->update(['default' => 0]);
+            }
+        }, 3); // 设置重试次数以应对死锁等异常情况
         return $this->success();
     }
 
@@ -157,7 +166,7 @@ class AddressController extends Base
             ->orderByDesc('id')
             ->paginate()
             ->items();
-        foreach ($rows as $row){
+        foreach ($rows as $row) {
             $closestWarehouse = null;
             foreach ($warehouses as $warehouse) {
                 $distance = Area::getDistanceFromLngLat($row->lng, $row->lat, $warehouse->lng, $warehouse->lat);
@@ -168,7 +177,7 @@ class AddressController extends Base
             }
             if (!$closestWarehouse) {
                 $row->lock = true;
-            }else{
+            } else {
                 $row->lock = false;
             }
         }

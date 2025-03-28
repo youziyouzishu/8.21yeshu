@@ -25,6 +25,7 @@ use Tinywan\Jwt\JwtToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Coupon newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Coupon newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Coupon query()
+ * @property-read mixed $type_text
  * @mixin \Eloquent
  */
 class Coupon extends Base
