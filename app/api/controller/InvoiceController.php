@@ -30,6 +30,13 @@ class InvoiceController extends Base
         return $this->success();
     }
 
+    function detail(Request $request)
+    {
+        $id = $request->post('id');
+        $row = UsersInvoice::where(['id' => $id])->first();
+        return $this->success('成功',$row);
+    }
+
     function update(Request $request)
     {
         $id = $request->post('id');

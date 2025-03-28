@@ -91,25 +91,17 @@ class GoodsController extends Base
             ->when(!empty($category_id), function ($query) use ($category_id) {
                 $query->where('category_id', $category_id);
             })
-            ->when(!empty($order), function ($query) use ($order, $type) {
+            ->when(!empty($order), function ($query) use ($order) {
                 if ($order == 1) {
-                    $query->orderByDesc('sale_count');
+                    $query->orderByDesc('sales');
                 } elseif ($order == 2) {
                     $query->orderBy('sales', 'asc');
                 } elseif ($order == 3) {
                     $query->orderBy('sales', 'desc');
                 } elseif ($order == 4) {
-                    if ($type == 1) {
-                        $query->orderBy('price', 'asc');
-                    } else {
-                        $query->orderBy('rent', 'asc');
-                    }
+                    $query->orderBy('price', 'asc');
                 } elseif ($order == 5) {
-                    if ($type == 1) {
-                        $query->orderBy('price', 'desc');
-                    } else {
-                        $query->orderBy('rent', 'desc');
-                    }
+                    $query->orderBy('price', 'desc');
                 } elseif ($order == 6) {
                     $query->orderByDesc('id');
                 }
@@ -156,10 +148,11 @@ class GoodsController extends Base
         if (empty($shopcar_ids)) {
             return $this->fail('请选择商品');
         }
-        $address = UsersAddress::find($address_id);
-        if (!$address) {
-            return $this->fail('地址不存在');
+        $address = null;
+        if (!empty($address_id)) {
+            $address = UsersAddress::find($address_id);
         }
+
         $warehouses = Warehouse::all();
         if ($warehouses->isEmpty()) {
             return $this->fail('没有可用的仓库');
@@ -171,7 +164,7 @@ class GoodsController extends Base
             return $this->fail('未配置最大距离');
         }
         foreach ($warehouses as $warehouse) {
-            $distance = Area::getDistanceFromLngLat($address->lng, $address->lat, $warehouse->lng, $warehouse->lat);
+            $distance = Area::getDistanceFromLngLat($address?$address->lng:$request->lng, $address?$address->lat:$request->lat, $warehouse->lng, $warehouse->lat);
             if ($distance < $minDistance && $distance <= $maxDeliveryDistance) {
                 $minDistance = $distance;
                 $closestWarehouse = $warehouse;

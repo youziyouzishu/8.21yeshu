@@ -13,8 +13,7 @@ use plugin\admin\app\model\Base;
  * @property string $name 商品名称
  * @property string $image 图片
  * @property string $images 轮播图
- * @property string $price 直购价
- * @property string $rent 租赁价/月
+ * @property string $price 直购价/租赁价
  * @property string $deposit 押金
  * @property int $sales 销量
  * @property string|null $content 内容
