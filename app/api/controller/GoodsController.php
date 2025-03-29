@@ -14,6 +14,7 @@ use app\admin\model\UsersCollect;
 use app\admin\model\UsersCoupon;
 use app\admin\model\Warehouse;
 use app\api\basic\Base;
+use app\api\service\Pay;
 use support\Db;
 use support\Log;
 use support\Request;
@@ -282,7 +283,7 @@ class GoodsController extends Base
                     'warehouse_id' => $closestWarehouse->id,
                     'delivery_type' => $delivery_type,
                     'delivery_time' => $delivery_time,
-                    'ordersn' => GoodsOrders::generateOrderSn(),
+                    'ordersn' => Pay::generateOrderSn(),
                     'pay_amount' => $pay_amount,
                     'coupon_amount' => $coupon_amount,
                     'goods_amount' => $total_goods_amount,

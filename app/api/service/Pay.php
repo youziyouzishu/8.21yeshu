@@ -59,4 +59,9 @@ class Pay
             default => throw new \Exception('支付类型错误'),
         };
     }
+
+    public static function generateOrderSn()
+    {
+        return date('Ymd') . mb_strtoupper(uniqid());
+    }
 }

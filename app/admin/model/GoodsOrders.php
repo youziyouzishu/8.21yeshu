@@ -75,11 +75,6 @@ class GoodsOrders extends Base
     ];
 
 
-    public static function generateOrderSn()
-    {
-        return date('Ymd') . mb_strtoupper(uniqid());
-    }
-
     function subs()
     {
         return $this->hasMany(GoodsOrdersSubs::class, 'order_id', 'id');
