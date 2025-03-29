@@ -69,7 +69,7 @@ class InvoiceController extends Base
     function select(Request $request)
     {
         $rows = UsersInvoice::where(['user_id' => $request->user_id])
-            ->orderByDesc('id')
+            ->latest()
             ->paginate()
             ->items();
         return $this->success('成功', $rows);

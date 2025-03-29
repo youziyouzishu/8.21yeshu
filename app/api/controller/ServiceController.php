@@ -39,7 +39,7 @@ class ServiceController extends Base
             ->when(!empty($type), function ($query) use ($type) {
                 $query->where('type', $type);
             })
-            ->orderByDesc('id')
+            ->latest()
             ->paginate()
             ->items();
         return $this->success('成功', $rows);

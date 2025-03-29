@@ -4586,11 +4586,11 @@
         },
         {
             "name": "tinywan/jwt",
-            "version": "v1.11.1",
+            "version": "v1.11.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/tinywan/jwt/v1.11.1/tinywan-jwt-v1.11.1.zip",
-                "reference": "0eb9fb0bca368aacd1109abbe26e922e9ce5811b",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/tinywan/jwt/v1.11.2/tinywan-jwt-v1.11.2.zip",
+                "reference": "2f8f7e4f6d54779bf281f94d71ec4e1399163fa0",
                 "shasum": ""
             },
             "require": {
@@ -4621,9 +4621,9 @@
             "description": "JSON Web Token (JWT) for webman plugin",
             "support": {
                 "issues": "https://github.com/Tinywan/webman-jwt/issues",
-                "source": "https://github.com/Tinywan/webman-jwt/tree/v1.11.1"
+                "source": "https://github.com/Tinywan/webman-jwt/tree/v1.11.2"
             },
-            "time": "2025-02-08T03:32:41+00:00"
+            "time": "2025-03-22T09:14:41+00:00"
         },
         {
             "name": "tinywan/validate",

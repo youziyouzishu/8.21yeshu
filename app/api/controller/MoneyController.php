@@ -59,7 +59,7 @@ class MoneyController extends Base
             })
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->orderByDesc('id')
+            ->latest()
             ->paginate()
             ->getCollection()
             ->each(function ($item) {

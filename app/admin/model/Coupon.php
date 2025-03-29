@@ -10,7 +10,7 @@ use Tinywan\Jwt\JwtToken;
 
 
 /**
- *
+ * 
  *
  * @property int $id 主键
  * @property string $name 券名称

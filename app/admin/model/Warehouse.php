@@ -2,29 +2,23 @@
 
 namespace app\admin\model;
 
-
-use Illuminate\Database\Eloquent\SoftDeletes;
 use plugin\admin\app\model\Base;
-use support\Db;
-
 
 /**
- * 
- *
- * @property int $id 主键
- * @property string $name 仓库名
- * @property string $lat 纬度
+ * @property integer $id 主键(主键)
+ * @property string $name 名称
+ * @property string $mobile 手机号
+ * @property string $province 省
+ * @property string $city 市
+ * @property string $region 区
+ * @property string $address 详细地址
  * @property string $lng 经度
- * @property \Illuminate\Support\Carbon|null $created_at 创建时间
- * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse query()
- * @mixin \Eloquent
+ * @property string $lat 纬度
+ * @property string $created_at 创建时间
+ * @property string $updated_at 更新时间
  */
 class Warehouse extends Base
 {
-
     /**
      * The table associated with the model.
      *
@@ -39,13 +33,17 @@ class Warehouse extends Base
      */
     protected $primaryKey = 'id';
 
-
     protected $fillable = [
         'name',
-        'lat',
+        'mobile',
+        'province',
+        'city',
+        'region',
+        'address',
         'lng',
+        'lat',
     ];
     
-
-
+    
+    
 }

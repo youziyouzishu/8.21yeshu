@@ -5,6 +5,8 @@ namespace app\admin\model;
 use plugin\admin\app\model\Base;
 
 /**
+ * 
+ *
  * @property integer $id 主键(主键)
  * @property string $image 封面
  * @property string $title 标题
@@ -14,6 +16,11 @@ use plugin\admin\app\model\Base;
  * @property integer $coupon_id 优惠券
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * @property-read \app\admin\model\Coupon|null $coupon
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity query()
+ * @mixin \Eloquent
  */
 class Activity extends Base
 {

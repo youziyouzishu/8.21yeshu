@@ -55,7 +55,7 @@ class CommonController extends Base
     #获取轮播图列表
     function getBannerList(Request $request)
     {
-        $rows = Banner::orderBy('weigh','desc')->get();
+        $rows = Banner::latest('weigh')->get();
         return $this->success('请求成功', $rows);
     }
 }

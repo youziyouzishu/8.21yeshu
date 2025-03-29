@@ -7,10 +7,8 @@ use app\admin\model\Category;
 use app\admin\model\DeliveryConfig;
 use app\admin\model\Goods;
 use app\admin\model\GoodsOrders;
-use app\admin\model\PrivacyService;
 use app\admin\model\Shopcar;
 use app\admin\model\UsersAddress;
-use app\admin\model\UsersCollect;
 use app\admin\model\UsersCoupon;
 use app\admin\model\Warehouse;
 use app\api\basic\Base;
@@ -67,17 +65,17 @@ class GoodsController extends Base
             })
             ->when(!empty($order), function ($query) use ($order) {
                 if ($order == 1) {
-                    $query->orderByDesc('sales');
+                    $query->latest('sales');
                 } elseif ($order == 2) {
-                    $query->orderBy('sales', 'asc');
+                    $query->oldest('sales');
                 } elseif ($order == 3) {
-                    $query->orderBy('sales', 'desc');
+                    $query->latest('sales');
                 } elseif ($order == 4) {
-                    $query->orderBy('price', 'asc');
+                    $query->oldest('price');
                 } elseif ($order == 5) {
-                    $query->orderBy('price', 'desc');
+                    $query->latest('price');
                 } elseif ($order == 6) {
-                    $query->orderByDesc('id');
+                    $query->latest('id');
                 }
             })
             ->paginate()

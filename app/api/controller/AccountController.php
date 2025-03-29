@@ -6,7 +6,6 @@ use app\admin\model\User;
 use app\api\basic\Base;
 use Carbon\Carbon;
 use EasyWeChat\MiniApp\Application;
-use plugin\admin\app\common\Util;
 use support\Request;
 use Tinywan\Jwt\JwtToken;
 
@@ -28,11 +27,20 @@ class AccountController extends Base
             return $this->fail('客户端类型错误');
         }
         try {
-            $app = new Application(config('wechat.UserMiniApp'));
+            //todo
+            if ($client_type == 'user'){
+                $config = config('wechat.UserMiniApp');
+            }elseif ($client_type == 'transport'){
+                $config = config('wechat.UserMiniApp');
+            }elseif ($client_type == 'driver'){
+                $config = config('wechat.UserMiniApp');
+            }else{
+                return $this->fail('客户端类型错误');
+            }
+            $app = new Application($config);
             $ret = $app->getUtils()->codeToSession($code);
             $openid = $ret['openid'];
             $unionid = '123456';
-
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
         }
@@ -53,7 +61,7 @@ class AccountController extends Base
         }
         $token = JwtToken::generateToken([
             'id' => $user->id,
-            'openid' => $openid,
+            'openid' => $user->openid,
             'client_type' => $client_type,
             'client' => JwtToken::TOKEN_CLIENT_MOBILE
         ]);

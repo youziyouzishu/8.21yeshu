@@ -5,6 +5,7 @@ namespace app\api\controller;
 use app\admin\model\GoodsOrders;
 use app\admin\model\GoodsOrdersSubs;
 use app\api\basic\Base;
+use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 use EasyWeChat\MiniApp\Application;
@@ -107,8 +108,8 @@ class NotifyController extends Base
                     }
 
                     $order->status = 1;
-                    $order->pay_type = $paytype == 'wechat'?1:($paytype=='balance'?2:3);
-                    $order->pay_time = date('Y-m-d H:i:s');
+                    $order->pay_type = $paytype == 'wechat' ? 1 : ($paytype == 'balance' ? 2 : 3);
+                    $order->pay_time = Carbon::now();
                     $order->subs()->each(function (GoodsOrdersSubs $sub) {
                         //增加销量
                         $sub->goods()->increment('sales', $sub->num);

@@ -11,7 +11,7 @@ class ActivityController extends Base
     protected array $noNeedLogin = ['select'];
     function select(Request $request)
     {
-        $rows = Activity::all();
+        $rows = Activity::latest()->all();
         return $this->success('成功',$rows);
     }
 

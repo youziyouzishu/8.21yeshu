@@ -163,7 +163,7 @@ class AddressController extends Base
             return $this->fail('未配置最大距离');
         }
         $rows = UsersAddress::where(['user_id' => $request->user_id])
-            ->orderByDesc('id')
+            ->latest()
             ->paginate()
             ->items();
         foreach ($rows as $row) {
