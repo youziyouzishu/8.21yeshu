@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\admin\model\UsersInvoice;
 use app\api\basic\Base;
+use support\Db;
 use support\Request;
 
 class InvoiceController extends Base
@@ -47,15 +48,24 @@ class InvoiceController extends Base
         $mobile = $request->post('mobile');
         $bank = $request->post('bank');
         $bank_account = $request->post('bank_account');
-        UsersInvoice::where(['id' => $id])->update([
-            'type' => $type,
-            'name' => $name,
-            'taxpayer' => $taxpayer,
-            'address' => $address,
-            'mobile' => $mobile,
-            'bank' => $bank,
-            'bank_account' => $bank_account,
-        ]);
+        $row = UsersInvoice::find($id);
+        if (!$row) {
+            return $this->fail('发票不存在');
+        }
+        // 使用事务管理
+        Db::connection('plugin.admin.mysql')->transaction(function () use ($request, $row, $type, $name, $taxpayer, $address, $mobile, $bank, $bank_account) {
+            // 删除旧记录并创建新记录
+            $row->delete();
+            UsersInvoice::create([
+                'type' => $type,
+                'name' => $name,
+                'taxpayer' => $taxpayer,
+                'address' => $address,
+                'mobile' => $mobile,
+                'bank' => $bank,
+                'bank_account' => $bank_account,
+            ]);
+        }, 3); // 设置重试次数以应对死锁等异常情况
         return $this->success();
     }
 

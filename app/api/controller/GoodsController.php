@@ -17,6 +17,7 @@ use support\Db;
 use support\Log;
 use support\Request;
 use support\Response;
+use Webman\RedisQueue\Client;
 
 class GoodsController extends Base
 {
@@ -291,6 +292,7 @@ class GoodsController extends Base
                     'invoice_id' => $invoice_id
                 ]);
                 $order->subs()->createMany($sub_data);
+                Client::send('job', ['order_id' => $order->id, 'event' => 'order_expire'], 60 * 15);
                 Db::connection('plugin.admin.mysql')->commit();
             } catch (\Throwable $e) {
                 Db::connection('plugin.admin.mysql')->rollBack();

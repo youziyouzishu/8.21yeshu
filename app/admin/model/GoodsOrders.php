@@ -12,27 +12,31 @@ use support\Db;
  *
  * @property int $id 主键
  * @property int $user_id 用户
+ * @property int $address_id 收货地址
+ * @property int $warehouse_id 仓库
+ * @property int $delivery_type 配送类型:1=立即配送,2=预约配送
+ * @property string $delivery_time 配送时间
  * @property string $ordersn 订单编号
  * @property string $pay_amount 支付金额
  * @property string $coupon_amount 优惠券金额
  * @property string $goods_amount 商品金额
  * @property string $freight 运费
- * @property int $status 状态:0=待支付,1=支付成功,2=取消
+ * @property float $distance 距离
+ * @property string $mark 备注
+ * @property int $invoice_id 发票
+ * @property int $pay_type 支付类型:0=无,1=微信,2=余额
+ * @property \Illuminate\Support\Carbon|null $pay_time 支付时间
  * @property \Illuminate\Support\Carbon|null $created_at 创建时间
  * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\GoodsOrdersSubs> $subs
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrders newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrders newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrders query()
- * @property int $address_id 收货地址
- * @property int $warehouse_id 仓库
- * @property float $distance 距离
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\GoodsOrdersSubs> $subs
- * @property string $mark 备注
- * @property int $delivery_type 配送类型:1=立即配送,2=预约配送
- * @property string $delivery_time 配送时间
- * @property int $invoice_id 发票
- * @property int $pay_type 支付类型:1=微信,2=余额
- * @property \Illuminate\Support\Carbon|null $pay_time 支付时间
+ * @property int $status 状态:0=待支付,1=待商家接单,2=取消,3=待骑手接单,4=待骑手到店,5=待骑手取货,6=配送中,7=配送完成,8=退款成功,9=订单完成
+ * @property-read mixed $status_text
+ * @property \Illuminate\Support\Carbon|null $cancel_time 取消时间
+ * @property \Illuminate\Support\Carbon|null $confirm_time 确认时间
+ * @property \Illuminate\Support\Carbon|null $arrival_time 送达时间
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
@@ -53,6 +57,11 @@ class GoodsOrders extends Base
 
     protected $casts = [
         'pay_time' => 'datetime:Y-m-d H:i:s',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'cancel_time' => 'datetime:Y-m-d H:i:s',
+        'confirm_time' => 'datetime:Y-m-d H:i:s',
+        'arrival_time' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected $fillable = [
@@ -74,13 +83,37 @@ class GoodsOrders extends Base
         'pay_time',
     ];
 
+    protected $appends = [
+        'status_text',
+    ];
 
     function subs()
     {
         return $this->hasMany(GoodsOrdersSubs::class, 'order_id', 'id');
     }
 
+    function getStatusTextAttribute($value)
+    {
+        $value = $value ? $value : $this->status;
+        $list = $this->getStatusList();
+        return $list[$value] ?? '';
+    }
 
+    function getStatusList()
+    {
+        return [
+            0 => '待支付',
+            1 => '待商家接单',
+            2 => '取消',
+            3 => '待骑手接单',
+            4 => '待骑手到店',
+            5 => '待骑手取货',
+            6 => '配送中',
+            7 => '配送完成',
+            8 => '退款成功',
+            9 => '订单完成',
+        ];
+    }
 
 
 }

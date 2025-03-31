@@ -5,6 +5,8 @@ namespace app\admin\model;
 use plugin\admin\app\model\Base;
 
 /**
+ * 
+ *
  * @property integer $id 主键(主键)
  * @property string $name 名称
  * @property string $mobile 手机号
@@ -16,6 +18,10 @@ use plugin\admin\app\model\Base;
  * @property string $lat 纬度
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse query()
+ * @mixin \Eloquent
  */
 class Warehouse extends Base
 {

@@ -2,6 +2,7 @@
 
 namespace app\queue\redis;
 
+use app\admin\model\GoodsOrders;
 use app\admin\model\UsersCoupon;
 use Webman\RedisQueue\Consumer;
 
@@ -24,6 +25,16 @@ class Job implements Consumer
             if ($user_coupon->status == 1){
                 $user_coupon->status = 3;
                 $user_coupon->save();
+            }
+        }
+
+        if ($event == 'order_expire'){
+            $id = $data['id'];
+            $order = GoodsOrders::find($id);
+            if ($order->status == 0){
+                //如果还没支付 取消订单
+                $order->status = 2;
+                $order->save();
             }
         }
     }
