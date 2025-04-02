@@ -81,7 +81,7 @@ class OrdersController extends Base
                 }
             })
             ->with(['subs' => function ($query) {
-                $query->with(['goods', 'comment']);
+                $query->with(['goods']);
             }])
             ->orderByDesc('id')
             ->paginate()
@@ -99,7 +99,7 @@ class OrdersController extends Base
         $id = $request->post('id');
         $order = GoodsOrders::where(['user_id' => $request->user_id, 'id' => $id])
             ->with(['subs' => function ($query) {
-                $query->with(['goods', 'comment']);
+                $query->with(['goods']);
             }])
             ->first();
         if (!$order) {

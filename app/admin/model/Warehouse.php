@@ -21,6 +21,7 @@ use plugin\admin\app\model\Base;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse query()
+ * @property string|null $deleted_at 删除时间
  * @mixin \Eloquent
  */
 class Warehouse extends Base

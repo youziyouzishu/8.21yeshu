@@ -27,14 +27,13 @@ class AccountController extends Base
             return $this->fail('客户端类型错误');
         }
         try {
-            //todo
-            if ($client_type == 'user'){
+            if ($client_type == 'user') {
                 $config = config('wechat.UserMiniApp');
-            }elseif ($client_type == 'transport'){
-                $config = config('wechat.UserMiniApp');
-            }elseif ($client_type == 'driver'){
-                $config = config('wechat.UserMiniApp');
-            }else{
+            } elseif ($client_type == 'transport') {
+                $config = config('wechat.TransportMiniApp');
+            } elseif ($client_type == 'driver') {
+                $config = config('wechat.DriverMiniApp');
+            } else {
                 return $this->fail('客户端类型错误');
             }
             $app = new Application($config);
@@ -52,12 +51,14 @@ class AccountController extends Base
                 'avatar' => '/app/admin/avatar.png',
                 'join_time' => Carbon::now()->toDateTimeString(),
                 'join_ip' => $request->getRealIp(),
-                'last_time' => Carbon::now()->toDateTimeString(),
-                'last_ip' => $request->getRealIp(),
                 'openid' => $openid,
                 'unionid' => $unionid,
                 'client_type' => $client_type,
+                'status' => $client_type == 'user' ? 1 : 0,#用户端默认为启用
             ]);
+        }
+        if ($user->status == 0){
+            return  $this->fail('请联系管理员开启账号');
         }
         $token = JwtToken::generateToken([
             'id' => $user->id,
@@ -65,6 +66,11 @@ class AccountController extends Base
             'client_type' => $client_type,
             'client' => JwtToken::TOKEN_CLIENT_MOBILE
         ]);
+        $user->token = $token['access_token'];
+        $user->last_time = Carbon::now();
+        $user->last_ip = $request->getRealIp();
+        $user->save();
+
         return $this->success('登录成功', ['user' => $user, 'token' => $token]);
     }
 

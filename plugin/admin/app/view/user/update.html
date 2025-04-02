@@ -13,12 +13,7 @@
             <div class="mainBox">
                 <div class="main-container mr-5">
                     
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">用户名</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="username" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
+
                     
                     <div class="layui-form-item">
                         <label class="layui-form-label required">昵称</label>
@@ -26,20 +21,7 @@
                             <input type="text" name="nickname" value="" required lay-verify="required" class="layui-input">
                         </div>
                     </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">密码</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="password" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">性别</label>
-                        <div class="layui-input-block">
-                            <div name="sex" id="sex" value="" ></div>
-                        </div>
-                    </div>
+
                     
                     <div class="layui-form-item">
                         <label class="layui-form-label">头像</label>
@@ -54,32 +36,11 @@
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">邮箱</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="email" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
+
                     <div class="layui-form-item">
                         <label class="layui-form-label">手机</label>
                         <div class="layui-input-block">
                             <input type="text" name="mobile" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">等级</label>
-                        <div class="layui-input-block">
-                            <input type="number" name="level" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">生日</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="birthday" id="birthday" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     
@@ -89,49 +50,24 @@
                             <input type="number" name="money" value="" class="layui-input">
                         </div>
                     </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">积分</label>
+
+
+                    <div class="layui-form-item warehouse_id">
+                        <label class="layui-form-label">所属仓库</label>
                         <div class="layui-input-block">
-                            <input type="number" name="score" value="" class="layui-input">
+                            <div name="warehouse_id" id="warehouse_id" value="" ></div>
                         </div>
                     </div>
-                    
+
                     <div class="layui-form-item">
-                        <label class="layui-form-label">登录时间</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="last_time" id="last_time" autocomplete="off" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">登录ip</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="last_ip" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">注册时间</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="join_time" id="join_time" autocomplete="off" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">注册ip</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="join_ip" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">禁用</label>
+                        <label class="layui-form-label">状态</label>
                         <div class="layui-input-block">
                             <input type="checkbox" id="status" lay-filter="status" lay-skin="switch" />
-                            <input type="text" style="display:none" name="status" value="0" />
+                            <input type="text" style="display:none" name="status" value="1" />
                         </div>
                     </div>
+
+
                     
                 </div>
             </div>
@@ -181,27 +117,41 @@
                                 obj.attr("value", value);
                             }
                         });
-                        
-                        // 字段 性别 sex
-                        layui.use(["jquery", "xmSelect", "popup"], function() {
+
+                        layui.use(["jquery", "xmSelect", "popup"], function () {
+                            let value = layui.$("#warehouse_id").attr("value");
+                            let initValue = value ? value.split(",") : [0];
+                            // 预加载默认值
                             layui.$.ajax({
-                                url: "/app/admin/dict/get/sex",
+                                url: "/admin/warehouse/select?format=select&id=" + value,
                                 dataType: "json",
                                 success: function (res) {
-                                    let value = layui.$("#sex").attr("value");
-                                    let initValue = value ? value.split(",") : [];
+                                    if (res.data.length === 0){
+                                        res.data = [];
+                                    }
                                     layui.xmSelect.render({
-                                        el: "#sex",
-                                        name: "sex",
+                                        el: '#warehouse_id',
+                                        name: "warehouse_id",
                                         initValue: initValue,
                                         data: res.data,
-                                        model: {"icon":"hidden","label":{"type":"text"}},
+                                        filterable: true,
                                         clickClose: true,
                                         radio: true,
+                                        remoteSearch: true,
+
+                                        remoteMethod: function (val, cb, show, pageIndex) {
+                                            layui.$.ajax({
+                                                url: "/admin/warehouse/select?format=select",
+                                                dataType: "json",
+                                                data: {
+                                                    id: val
+                                                },
+                                                success: function (res) {
+                                                    cb(res.data);
+                                                }
+                                            });
+                                        }
                                     });
-                                    if (res.code) {
-                                        layui.popup.failure(res.msg);
-                                    }
                                 }
                             });
                         });
@@ -235,29 +185,7 @@
                             });
                         });
                         
-                        // 字段 生日 birthday
-                        layui.use(["laydate"], function() {
-                            layui.laydate.render({
-                                elem: "#birthday",
-                            });
-                        })
-                        
-                        // 字段 登录时间 last_time
-                        layui.use(["laydate"], function() {
-                            layui.laydate.render({
-                                elem: "#last_time",
-                                type: "datetime",
-                            });
-                        })
-                        
-                        // 字段 注册时间 join_time
-                        layui.use(["laydate"], function() {
-                            layui.laydate.render({
-                                elem: "#join_time",
-                                type: "datetime",
-                            });
-                        })
-                        
+
                         // 字段 禁用 status
                         layui.use(["form"], function() {
                             layui.$("#status").attr("checked", layui.$('input[name="status"]').val() != 0);

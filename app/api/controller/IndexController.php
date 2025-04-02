@@ -16,27 +16,10 @@ class IndexController extends Base
 
     protected array $noNeedLogin = ['index','test'];
 
-    function index(Request $request)
+    function index()
     {
-        $connection = $request->connection;
 
-
-        $id = Timer::add(0.5, function () use ($connection, &$id) {
-
-            // 连接关闭时，清除定时器
-            if ($connection->getStatus() !== TcpConnection::STATUS_ESTABLISHED) {
-                Timer::del($id);
-            }
-            $connection->send(new ServerSentEvents(['data' => 'hello']));
-        });
-
-        return response('', 200, [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-            'Connection' => 'keep-alive',
-        ]);
     }
-
 
 
 }

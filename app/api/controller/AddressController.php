@@ -143,7 +143,7 @@ class AddressController extends Base
     function delete(Request $request)
     {
         $ids = $request->post('ids');
-        UsersAddress::where(['user_id' => $request->user_id])->destroy($ids);
+        UsersAddress::where(['user_id' => $request->user_id])->whereIn('id',$ids)->delete();
         return $this->success();
     }
 

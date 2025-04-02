@@ -20,9 +20,7 @@ use support\Db;
  * @property string|null $birthday 生日
  * @property string $money 余额(元)
  * @property int $score 积分
- * @property string|null $last_time 登录时间
  * @property string|null $last_ip 登录ip
- * @property string|null $join_time 注册时间
  * @property string|null $join_ip 注册ip
  * @property string|null $token token
  * @property \Illuminate\Support\Carbon|null $created_at 创建时间
@@ -36,6 +34,10 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
  * @property string|null $mobile 手机
  * @property string $unionid 开放平台标识
+ * @property \Illuminate\Support\Carbon|null $last_time 登录时间
+ * @property \Illuminate\Support\Carbon|null $join_time 注册时间
+ * @property int $work_status 工作状态:0=否,1=是
+ * @property int|null $warehouse_id 所属仓库
  * @mixin \Eloquent
  */
 class User extends Base
@@ -53,6 +55,13 @@ class User extends Base
      * @var string
      */
     protected $primaryKey = 'id';
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'last_time' => 'datetime:Y-m-d H:i:s',
+        'join_time' => 'datetime:Y-m-d H:i:s',
+    ];
 
     protected $fillable = [
         'username',

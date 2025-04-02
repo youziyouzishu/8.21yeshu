@@ -37,6 +37,12 @@ use support\Db;
  * @property \Illuminate\Support\Carbon|null $cancel_time 取消时间
  * @property \Illuminate\Support\Carbon|null $confirm_time 确认时间
  * @property \Illuminate\Support\Carbon|null $arrival_time 送达时间
+ * @property-read \app\admin\model\UsersAddress|null $address
+ * @property-read \app\admin\model\User|null $user
+ * @property-read mixed $delivery_type_text
+ * @property-read \app\admin\model\UsersInvoice|null $invoice
+ * @property-read \app\admin\model\Warehouse|null $warehouse
+ * @property int|null $transport_id 配送员
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
@@ -85,11 +91,27 @@ class GoodsOrders extends Base
 
     protected $appends = [
         'status_text',
+        'delivery_type_text',
     ];
 
     function subs()
     {
         return $this->hasMany(GoodsOrdersSubs::class, 'order_id', 'id');
+    }
+
+    function getDeliveryTypeTextAttribute($value)
+    {
+        $value = $value ? $value : $this->delivery_type;
+        $list = $this->getDeliveryTypeList();
+        return $list[$value] ?? '';
+    }
+
+    function getDeliveryTypeList()
+    {
+        return [
+            1 => '立即配送',
+            2 => '预约配送',
+        ];
     }
 
     function getStatusTextAttribute($value)
@@ -113,6 +135,31 @@ class GoodsOrders extends Base
             8 => '退款成功',
             9 => '订单完成',
         ];
+    }
+
+    function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    function address()
+    {
+        return $this->belongsTo(UsersAddress::class, 'address_id', 'id');
+    }
+
+    function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');
+    }
+
+    function invoice()
+    {
+        return $this->belongsTo(UsersInvoice::class, 'invoice_id', 'id');
+    }
+
+    function transport()
+    {
+        return $this->belongsTo(User::class, 'transport_id', 'id');
     }
 
 
