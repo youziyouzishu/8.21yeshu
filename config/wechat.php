@@ -31,8 +31,8 @@ return [
         ],
     ],
     'TransportMiniApp'=>[
-        'app_id' => 'wx4504f42b53ac9046', // 开放平台账号的 appid
-        'secret' => 'b032d86a0042b0745990986d8b74200a',   // 开放平台账号的 secret
+        'app_id' => 'wxf467ac25cda994ce',
+        'secret' => '67dcee3101ad4ed1af770d3b3707810b',
         'token' => 'easywechat',  // 开放平台账号的 token
         'aes_key' => '',   // 明文模式请勿填写 EncodingAESKey
 

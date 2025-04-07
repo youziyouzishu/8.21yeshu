@@ -21,6 +21,7 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shopcar newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shopcar query()
  * @property-read \app\admin\model\Goods|null $goods
+ * @property-read \app\admin\model\User|null $user
  * @mixin \Eloquent
  */
 class Shopcar extends Base
@@ -48,6 +49,11 @@ class Shopcar extends Base
     function goods()
     {
         return $this->belongsTo(Goods::class, 'goods_id','id');
+    }
+
+    function user()
+    {
+        return $this->belongsTo(User::class, 'user_id','id');
     }
 
 }

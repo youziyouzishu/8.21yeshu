@@ -65,6 +65,11 @@ class OrdersController extends Base
     }
 
 
+    /**
+     * 列表
+     * @param Request $request
+     * @return \support\Response
+     */
     function select(Request $request)
     {
         $status = $request->post('status');#状态:0=全部,1=进行中,2=已完成,3=售后
@@ -94,6 +99,11 @@ class OrdersController extends Base
         return $this->success('成功', $rows);
     }
 
+    /**
+     * 详情
+     * @param Request $request
+     * @return \support\Response
+     */
     function detail(Request $request)
     {
         $id = $request->post('id');
@@ -108,6 +118,11 @@ class OrdersController extends Base
         return $this->success('成功', $order);
     }
 
+    /**
+     * 取消订单
+     * @param Request $request
+     * @return \support\Response
+     */
     function cancel(Request $request)
     {
         $id = $request->post('id');
@@ -124,6 +139,11 @@ class OrdersController extends Base
         return  $this->success('成功');
     }
 
+    /**
+     * 确认收货
+     * @param Request $request
+     * @return \support\Response
+     */
     function confirm(Request $request)
     {
         $id = $request->post('id');

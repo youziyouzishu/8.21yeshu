@@ -102,7 +102,11 @@
                     url: SELECT_API,
                     dataType: "json",
                     success: function (res) {
-                        
+                        if (res.data[0].client_type === "transport" ) {
+                            $(".warehouse_id").removeClass("layui-hide")
+                        }else{
+                            $(".warehouse_id").addClass("layui-hide")
+                        }
                         // 给表单初始化数据
                         layui.each(res.data[0], function (key, value) {
                             let obj = $('*[name="'+key+'"]');
@@ -138,7 +142,6 @@
                                         clickClose: true,
                                         radio: true,
                                         remoteSearch: true,
-
                                         remoteMethod: function (val, cb, show, pageIndex) {
                                             layui.$.ajax({
                                                 url: "/admin/warehouse/select?format=select",

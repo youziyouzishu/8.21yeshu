@@ -63,12 +63,14 @@ class UserController extends Crud
         if ($request->method() === 'POST') {
             $id = $request->post('id');
             $status = $request->post('status');
+            $warehouse_id = $request->post('warehouse_id');
             $user = \app\admin\model\User::find($id);
+            if ($user->client_type == 'transport' && empty($warehouse_id)){
+                return $this->fail('请选择所属仓库');
+            }
             if ($user->status == 0 && $status == 1){
                 //禁用->正常
-                if ($user->client_type == 'transport' && empty($user->warehouse_id)){
-                    return $this->fail('请选择所属仓库');
-                }
+
             }
             return parent::update($request);
         }

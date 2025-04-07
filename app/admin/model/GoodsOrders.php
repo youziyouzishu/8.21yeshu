@@ -43,6 +43,17 @@ use support\Db;
  * @property-read \app\admin\model\UsersInvoice|null $invoice
  * @property-read \app\admin\model\Warehouse|null $warehouse
  * @property int|null $transport_id 配送员
+ * @property int|null $distribute_type 派单类型:1=手动派单,2=自动派单
+ * @property-read \app\admin\model\User|null $transport
+ * @property-read mixed $distribute_type_text
+ * @property \Illuminate\Support\Carbon|null $distribute_time 派单时间
+ * @property \Illuminate\Support\Carbon|null $accept_time 接单时间
+ * @property string|null $cancel_reason 取消原因
+ * @property string|null $cancel_explain 取消说明
+ * @property string|null $cancel_images 取消凭证
+ * @property \Illuminate\Support\Carbon|null $reach_time 到店时间
+ * @property \Illuminate\Support\Carbon|null $take_time 取货时间
+ * @property int $settle_status 结算状态:0=无,1=未结算,2=已结算
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
@@ -68,6 +79,10 @@ class GoodsOrders extends Base
         'cancel_time' => 'datetime:Y-m-d H:i:s',
         'confirm_time' => 'datetime:Y-m-d H:i:s',
         'arrival_time' => 'datetime:Y-m-d H:i:s',
+        'distribute_time' => 'datetime:Y-m-d H:i:s',
+        'accept_time' => 'datetime:Y-m-d H:i:s',
+        'reach_time' => 'datetime:Y-m-d H:i:s',
+        'take_time' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected $fillable = [
@@ -87,16 +102,33 @@ class GoodsOrders extends Base
         'invoice_id',
         'pay_type',
         'pay_time',
+        'settle_status'
     ];
 
     protected $appends = [
         'status_text',
         'delivery_type_text',
+        'distribute_type_text',
     ];
 
     function subs()
     {
         return $this->hasMany(GoodsOrdersSubs::class, 'order_id', 'id');
+    }
+
+    function getDistributeTypeTextAttribute($value)
+    {
+        $value = $value ? $value : $this->delivery_type;
+        $list = $this->getDistributeTypeList();
+        return $list[$value] ?? '';
+    }
+
+    function getDistributeTypeList()
+    {
+        return [
+            1 => '手动派送',
+            2 => '自动派送',
+        ];
     }
 
     function getDeliveryTypeTextAttribute($value)

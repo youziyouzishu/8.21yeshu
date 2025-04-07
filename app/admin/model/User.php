@@ -38,6 +38,10 @@ use support\Db;
  * @property \Illuminate\Support\Carbon|null $join_time 注册时间
  * @property int $work_status 工作状态:0=否,1=是
  * @property int|null $warehouse_id 所属仓库
+ * @property string|null $lat 纬度
+ * @property string|null $lng 经度
+ * @property string|null $truename 姓名
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\UsersBankcard> $bankcard
  * @mixin \Eloquent
  */
 class User extends Base
@@ -115,6 +119,11 @@ class User extends Base
         } catch (\Throwable $e) {
             Db::connection('plugin.admin.mysql')->rollback();
         }
+    }
+
+    function bankcard()
+    {
+        return $this->hasMany(UsersBankcard::class, 'user_id', 'id');
     }
 
 

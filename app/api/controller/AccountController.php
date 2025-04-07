@@ -57,6 +57,10 @@ class AccountController extends Base
                 'status' => $client_type == 'user' ? 1 : 0,#用户端默认为启用
             ]);
         }
+
+        $user->last_time = Carbon::now();
+        $user->last_ip = $request->getRealIp();
+        $user->save();
         if ($user->status == 0){
             return  $this->fail('请联系管理员开启账号');
         }
@@ -67,10 +71,7 @@ class AccountController extends Base
             'client' => JwtToken::TOKEN_CLIENT_MOBILE
         ]);
         $user->token = $token['access_token'];
-        $user->last_time = Carbon::now();
-        $user->last_ip = $request->getRealIp();
         $user->save();
-
         return $this->success('登录成功', ['user' => $user, 'token' => $token]);
     }
 

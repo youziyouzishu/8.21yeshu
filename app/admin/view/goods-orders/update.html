@@ -24,7 +24,16 @@
                     </div>
 
 
-                    <div class="layui-form-item transport_id">
+
+
+                    <div class="layui-form-item layui-hide distribute_type">
+                        <label class="layui-form-label">派单类型</label>
+                        <div class="layui-input-block">
+                            <div name="distribute_type" id="distribute_type" value="" ></div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item layui-hide transport_id">
                         <label class="layui-form-label">指定配送员</label>
                         <div class="layui-input-block">
                             <div name="transport_id" id="transport_id" value="" ></div>
@@ -141,9 +150,9 @@
                                     console.error(change)
                                     console.error(isAdd)
                                     if (change[0].value === "3"){
-                                        $(".transport_id").removeClass("layui-hide")
+                                        $(".distribute_type").removeClass("layui-hide")
                                     }else{
-                                        $(".transport_id").addClass("layui-hide")
+                                        $(".distribute_type").addClass("layui-hide")
                                     }
                                 },
                             })
@@ -183,8 +192,9 @@
                                                 url: "/app/admin/user/select?format=select",
                                                 dataType: "json",
                                                 data: {
-                                                    id: val,
+                                                    mobile: val,
                                                     warehouse_id:warehouse_id,
+                                                    work_status:1,
                                                 },
                                                 success: function (res) {
                                                     cb(res.data);
@@ -194,6 +204,36 @@
                                     });
                                 }
                             });
+                        });
+
+                        layui.use(["jquery", "xmSelect"], function() {
+                            let value = layui.$("#distribute_type").attr("value");
+                            let initValue = value ? value.split(",") : [];
+                            let distribute_typeSelect = layui.xmSelect.render({
+                                el: "#distribute_type",
+                                name: "distribute_type",
+                                filterable: true,
+                                initValue: initValue,
+                                data: [{"value":"1","name":"手动派单"},{"value":"2","name":"自动派单"}],
+                                model: {"icon":"hidden","label":{"type":"text"}},
+                                clickClose: true,
+                                radio: true,
+                                layVerify: "required",
+                                on: function(data){
+                                    //arr:  当前多选已选中的数据
+                                    var arr = data.arr;
+                                    //change, 此次选择变化的数据,数组
+                                    var change = data.change;
+                                    //isAdd, 此次操作是新增还是删除
+                                    var isAdd = data.isAdd;
+                                    if (change[0].value === "1"){
+                                        $(".transport_id").removeClass("layui-hide")
+                                    }else{
+                                        $(".transport_id").addClass("layui-hide")
+                                    }
+                                },
+                            })
+                            distribute_typeSelect.setValue(initValue,false,true);
                         });
                         
 

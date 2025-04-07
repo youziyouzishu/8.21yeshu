@@ -7,6 +7,7 @@ use support\Response;
 use app\admin\model\GoodsOrders;
 use plugin\admin\app\controller\Crud;
 use support\exception\BusinessException;
+use Webman\RedisQueue\Client;
 
 /**
  * 订单列表 
@@ -73,6 +74,23 @@ class GoodsOrdersController extends Crud
     public function update(Request $request): Response
     {
         if ($request->method() === 'POST') {
+            $id = $request->post('id');
+            $status = $request->post('status');
+            $transport_id = $request->post('transport_id');
+            $distribute_type = $request->post('distribute_type');#派单类型:1=手动派单,2=自动派单
+            $order = GoodsOrders::find($id);
+            if ($order->status == 1 && $status == 3){
+                //发单 指定配送员
+                if ($distribute_type == 1){
+                    if (empty($transport_id)){
+                        return $this->fail('请选择配送员');
+                    }
+                }
+                if ($distribute_type == 2){
+                    //自动派单
+                    Client::send('job', ['event' => 'distribute_order', 'id' => $order->id]);
+                }
+            }
             return parent::update($request);
         }
         return view('goods-orders/update');

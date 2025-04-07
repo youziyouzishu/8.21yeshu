@@ -10,6 +10,7 @@ use app\admin\model\Warehouse;
 use app\api\basic\Base;
 use support\Log;
 use support\Request;
+use support\Response;
 use Tinywan\Jwt\JwtToken;
 
 class UserController extends Base
@@ -33,17 +34,42 @@ class UserController extends Base
         return $this->success('成功', $row);
     }
 
-    function bindMobile(Request $request)
+    /**
+     * 编辑用户信息
+     * @param Request $request
+     * @return Response
+     */
+    function editUserInfo(Request $request)
+    {
+        $param = $request->post();
+        $fields = ['nickname', 'avatar', 'sex','birthday','truename'];
+        foreach ($param as $key => $value) {
+            if (!in_array($key, $fields)) {
+                unset($param[$key]);
+            }
+        }
+        $row = User::find($request->user_id);
+        $row->fill($param);
+        $row->save();
+        return $this->success('成功');
+    }
+
+    /**
+     * 绑定手机号
+     * @param Request $request
+     * @return Response
+     */
+    function bindMobile(Request $request): Response
     {
         $code = $request->post('code');
-        $client_type =  $request->client_type;
-        if ($client_type == 'user'){
+        $client_type = $request->client_type;
+        if ($client_type == 'user') {
             $config = config('wechat.UserMiniApp');
-        }elseif ($client_type == 'transport'){
+        } elseif ($client_type == 'transport') {
             $config = config('wechat.UserMiniApp');
-        }elseif ($client_type == 'driver'){
+        } elseif ($client_type == 'driver') {
             $config = config('wechat.UserMiniApp');
-        }else{
+        } else {
             return $this->fail('客户端类型错误');
         }
         try {
@@ -60,7 +86,7 @@ class UserController extends Base
             $user = User::find($request->user_id);
             $user->mobile = $mobile;
             $user->save();
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             Log::error('获取手机号失败');
             Log::error($e->getMessage());
             return $this->fail('获取手机号失败');
@@ -74,7 +100,12 @@ class UserController extends Base
         return $this->success('成功', ['user' => $user, 'token' => $token]);
     }
 
-    function getCollectList(Request $request)
+    /**
+     * 获取收藏列表
+     * @param Request $request
+     * @return Response
+     */
+    function getCollectList(Request $request): Response
     {
         $warehouses = Warehouse::all();
         if ($warehouses->isEmpty()) {
@@ -101,15 +132,46 @@ class UserController extends Base
             $freight = null;
         }
 
-        $rows = UsersCollect::where(['user_id'=>$request->user_id])
+        $rows = UsersCollect::where(['user_id' => $request->user_id])
             ->with(['goods'])
             ->latest()
             ->paginate()
             ->getCollection()
-            ->each(function (UsersCollect $item)use($freight) {
-                $item->setAttribute('freight',$freight);
+            ->each(function (UsersCollect $item) use ($freight) {
+                $item->setAttribute('freight', $freight);
             });
         return $this->success('成功', $rows);
+    }
+
+
+    /**
+     * 上传位置
+     * @param Request $request
+     * @return \support\Response
+     */
+    function uploadLocation(Request $request)
+    {
+        $lat = $request->lat;
+        $lng = $request->lng;
+        $user = User::find($request->user_id);
+        $user->lat = $lat;
+        $user->lng = $lng;
+        $user->save();
+        return $this->success();
+    }
+
+    /**
+     * 更改工作状态
+     * @param Request $request
+     * @return \support\Response
+     */
+    function changWorkStatus(Request $request)
+    {
+        $status = $request->post('status'); #工作状态:0=否,1=是
+        $user = User::find($request->user_id);
+        $user->work_status = $status;
+        $user->save();
+        return $this->success();
     }
 
 
