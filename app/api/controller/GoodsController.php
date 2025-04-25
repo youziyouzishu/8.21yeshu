@@ -19,7 +19,11 @@ use support\Request;
 use support\Response;
 use Webman\RedisQueue\Client;
 
-class GoodsController extends Base
+class
+
+
+
+GoodsController extends Base
 {
     protected array $noNeedLogin = [];
 
@@ -92,6 +96,9 @@ class GoodsController extends Base
     {
         $id = $request->post('id');
         $row = Goods::find($id);
+        if (!$row) {
+            return $this->fail('商品不存在');
+        }
         $row->setAttribute('is_collected', $row->collect()->where('user_id', $request->user_id)->exists());
         return $this->success('成功', $row);
     }

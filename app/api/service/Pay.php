@@ -36,7 +36,7 @@ class Pay
                 'attach' => $attach
             ]);
         } else {
-            throw new \Exception('支付类型错误', 1);
+            throw new \Exception('支付类型错误');
         }
         return $result;
     }

@@ -62,4 +62,15 @@ class BankCardController extends Base
         return $this->success('成功');
     }
 
+    /**
+     * 查询银行卡
+     * @param Request $request
+     * @return Response
+     */
+    function select(Request $request): Response
+    {
+        $rows = UsersBankcard::where(['user_id' => $request->user_id])->latest()->get();
+        return $this->success('成功', $rows);
+    }
+
 }

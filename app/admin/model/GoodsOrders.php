@@ -54,6 +54,15 @@ use support\Db;
  * @property \Illuminate\Support\Carbon|null $reach_time 到店时间
  * @property \Illuminate\Support\Carbon|null $take_time 取货时间
  * @property int $settle_status 结算状态:0=无,1=未结算,2=已结算
+ * @property-read mixed $pay_type_text
+ * @property-read mixed $settle_status_text
+ * @property string|null $accept_lng 接单经度
+ * @property string|null $accept_lat 接单纬度
+ * @property \Illuminate\Support\Carbon|null $timeout_time 配送超时时间
+ * @property string|null $total_distance 总距离
+ * @property int $timeout_status 超时状态:0=无,1=未超时,2=超时
+ * @property-read mixed $timeout_status_text
+ * @property string|null $total_time 总配送时长(分钟)
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
@@ -83,6 +92,7 @@ class GoodsOrders extends Base
         'accept_time' => 'datetime:Y-m-d H:i:s',
         'reach_time' => 'datetime:Y-m-d H:i:s',
         'take_time' => 'datetime:Y-m-d H:i:s',
+        'timeout_time' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected $fillable = [
@@ -109,6 +119,9 @@ class GoodsOrders extends Base
         'status_text',
         'delivery_type_text',
         'distribute_type_text',
+        'pay_type_text',
+        'settle_status_text',
+        'timeout_status_text',
     ];
 
     function subs()
@@ -146,6 +159,23 @@ class GoodsOrders extends Base
         ];
     }
 
+
+    function getSettleStatusTextAttribute($value)
+    {
+        $value = $value ? $value : $this->settle_status;
+        $list = $this->getSettleStatusList();
+        return $list[$value] ?? '';
+    }
+
+    function getSettleStatusList()
+    {
+        return [
+            0 => '无',
+            1 => '未结算',
+            2 => '已结算',
+        ];
+    }
+
     function getStatusTextAttribute($value)
     {
         $value = $value ? $value : $this->status;
@@ -168,6 +198,41 @@ class GoodsOrders extends Base
             9 => '订单完成',
         ];
     }
+
+    function getPayTypeTextAttribute($value)
+    {
+        $value = $value ? $value : $this->pay_type;
+        $list = $this->getPayTypeList();
+        return $list[$value] ?? '';
+    }
+
+    function getPayTypeList()
+    {
+        return [
+            0 => '无',
+            1 => '微信',
+            2 => '余额',
+        ];
+    }
+
+
+    function getTimeoutStatusTextAttribute($value)
+    {
+        $value = $value ? $value : $this->timeout_status;
+        $list = $this->getTimeoutStatusList();
+        return $list[$value] ?? '';
+    }
+
+    function getTimeoutStatusList()
+    {
+        return [
+            0 => '无',
+            1 => '未超时',
+            2 => '超时',
+        ];
+    }
+
+
 
     function user()
     {
