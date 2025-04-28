@@ -47,4 +47,10 @@ class WithdrawController extends Base
         }
         return $this->success('提现成功');
     }
+
+    function select(Request $request)
+    {
+        $rows = UsersWithdraw::where('user_id', $request->user_id)->latest()->paginate()->items();
+        return $this->success('成功',$rows);
+    }
 }

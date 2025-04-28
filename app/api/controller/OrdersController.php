@@ -14,6 +14,7 @@ use support\Request;
 
 class OrdersController extends Base
 {
+    protected array $noNeedLogin = ['pay'];
     /**
      * 支付
      * @param Request $request
@@ -41,7 +42,7 @@ class OrdersController extends Base
             } else {
                 $user = User::find($order->user_id);
                 if ($user->money < $order->pay_amount) {
-                    return $this->fail('余额不足');
+                    throw new \Exception('余额不足');
                 }
                 User::money(-$order->pay_amount, $order->user_id, '购买商品');
                 // 创建一个新的请求对象 直接调用支付

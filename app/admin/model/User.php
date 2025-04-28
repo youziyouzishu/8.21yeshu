@@ -40,7 +40,6 @@ use support\Db;
  * @property int|null $warehouse_id 所属仓库
  * @property string|null $lat 纬度
  * @property string|null $lng 经度
- * @property string|null $truename 姓名
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\UsersBankcard> $bankcard
  * @mixin \Eloquent
  */

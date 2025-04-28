@@ -61,5 +61,31 @@ class UsersWithdraw extends Base
         'bankcard_id',
     ];
 
+    protected $appends = [
+        'status_text',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    function getStatusTextAttribute($value)
+    {
+        $value = $value ? $value : $this->status;
+        $list = $this->getStatusList();
+        return $list[$value]??'';
+    }
+
+    function getStatusList()
+    {
+        return [
+            0 => '待审核',
+            1 => '已打款',
+            2 => '驳回',
+        ];
+    }
+
+
 
 }

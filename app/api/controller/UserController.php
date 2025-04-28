@@ -42,7 +42,7 @@ class UserController extends Base
     function editUserInfo(Request $request)
     {
         $param = $request->post();
-        $fields = ['nickname', 'avatar', 'sex','birthday','truename'];
+        $fields = ['nickname', 'avatar', 'sex','birthday'];
         foreach ($param as $key => $value) {
             if (!in_array($key, $fields)) {
                 unset($param[$key]);

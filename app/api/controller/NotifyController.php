@@ -66,6 +66,10 @@ class NotifyController extends Base
                     $res = $pay->callback($request->post());
                     $res = $res->resource;
                     $res = $res['ciphertext'];
+                    $trade_state = $res['trade_state'];
+                    if ($trade_state !== 'SUCCESS'){
+                        throw new \Exception('支付失败');
+                    }
                     $out_trade_no = $res['out_trade_no'];
                     $attach = $res['attach'];
 //                    $mchid = $res['mchid'];
@@ -89,6 +93,10 @@ class NotifyController extends Base
                 case 'alipay':
                     $pay = Pay::alipay($config);
                     $res = $pay->callback($request->post());
+                    $trade_status = $res->trade_status;
+                    if ($trade_status !== 'TRADE_SUCCESS'){
+                        throw new \Exception('支付失败');
+                    }
                     $out_trade_no = $res->out_trade_no;
                     $attach = $res->passback_params;
                     break;
@@ -102,6 +110,7 @@ class NotifyController extends Base
 
             switch ($attach) {
                 case 'goods':
+                    dump($out_trade_no);
                     $order = GoodsOrders::where(['ordersn' => $out_trade_no, 'status' => 0])->first();
                     if (!$order) {
                         throw new \Exception('订单不存在');

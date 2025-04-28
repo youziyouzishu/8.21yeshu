@@ -25,14 +25,15 @@ class TransportController extends Base
      */
     function getWorkList(Request $request)
     {
+        $status = $request->post('status');#1=待接单,2=待取货,3=配送中
         $lat = $request->lat;
         $lng = $request->lng;
-
+        $order = $request->post('order','asc');
         $name = 'admin_config';
         $config = Option::where('name', $name)->value('value');
         $config = json_decode($config);
 
-        $status = $request->post('status');#1=待接单,2=待取货,3=配送中
+
         $rows = GoodsOrders::where(['transport_id' => $request->user_id])
             ->with(['address', 'warehouse'])
             ->when(!empty($status), function (Builder $query) use ($status) {
@@ -46,7 +47,7 @@ class TransportController extends Base
                     $query->where('status', 6);
                 }
             })
-            ->latest()
+            ->orderBy('freight',$order)
             ->get();
         foreach ($rows as $row){
             $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $row->warehouse->lng, $row->warehouse->lat);#骑手离仓库距离
@@ -269,7 +270,7 @@ class TransportController extends Base
     }
 
 
-    function getWeekCount(Request $request)
+    function getWeekStatistic(Request $request)
     {
         $transport_id = $request->user_id;
         $week = GoodsOrders::where(['transport_id' => $transport_id])
@@ -277,12 +278,14 @@ class TransportController extends Base
         return $this->success('成功', ['money'=>$week->sum('freight'),'count'=>$week->count()]);
     }
 
-    function getMoneyList(Request $request)
+    /**
+     * 结算列表
+     * @param Request $request
+     * @return Response
+     */
+    function getSettleList(Request $request)
     {
         $date = $request->post('date', Carbon::now());
-        if (!$date){
-            return $this->fail('请选择月份');
-        }
         $date = Carbon::parse($date);
         // 提取年份和月份
         $year = $date->year;
@@ -318,7 +321,7 @@ class TransportController extends Base
         return $this->success('成功', [
             'arrival_count' => $orders->where('status', 7)->count(),
             'cancel_count' => $orders->where('status', 2)->count(),
-            'ontime_rate' => $orders->where('status', 7)->count() / $orders->count() * 100 . '%',
+            'ontime_rate' => $orders->where('status', 7)->count() / ($orders->count() == 0? 1 : $orders->count()) * 100 . '%',
             'avg_time' => $orders->where('status', 7)->avg('total_time') . '分钟'
         ]);
     }
@@ -362,7 +365,7 @@ class TransportController extends Base
             $timeDifference = "{$hours}小时{$minutes}分{$seconds}秒";
             $order->setAttribute('time_difference', $timeDifference);
         }
-        return $this->success('成功', ['list'=>$orders]);
+        return $this->success('成功', $orders);
     }
     
 
