@@ -30,6 +30,8 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersWithdraw query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersWithdraw withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersWithdraw withoutTrashed()
+ * @property-read mixed $status_text
+ * @property-read \app\admin\model\User|null $user
  * @mixin \Eloquent
  */
 class UsersWithdraw extends Base

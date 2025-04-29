@@ -54,6 +54,7 @@ class ConfigController extends Crud
         $data['purifier_clean_image'] = $post['purifier_clean_image'] ?? '';
         $data['purifier_repair_image'] = $post['purifier_repair_image'] ?? '';
         $data['delivery_speed'] = $post['delivery_speed'] ?? '';
+        $data['driver_speed'] = $post['driver_speed'] ?? '';
         $name = 'admin_config';
         $option = new Option();
         $row = $option->where('name', $name)->first();

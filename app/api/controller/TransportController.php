@@ -29,8 +29,7 @@ class TransportController extends Base
         $lat = $request->lat;
         $lng = $request->lng;
         $order = $request->post('order','asc');
-        $name = 'admin_config';
-        $config = Option::where('name', $name)->value('value');
+        $config = Option::where('name', 'admin_config')->value('value');
         $config = json_decode($config);
 
 
@@ -190,34 +189,6 @@ class TransportController extends Base
 
 
     /**
-     * 到达仓库
-     * @param Request $request
-     * @return Response
-     */
-    function reach(Request $request):Response
-    {
-        $id = $request->post('id');
-        $order = GoodsOrders::find($id);
-        if (!$order){
-            return $this->fail('订单不存在');
-        }
-        if ($order->status != 4){
-            return $this->fail('订单状态错误');
-        }
-        $lat = $request->lat;
-        $lng = $request->lng;
-        $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $order->warehouse->lng, $order->warehouse->lat);#骑手离仓库距离
-        if ($warehouse_distance > 1){
-            return $this->fail('骑手离仓库距离太远');
-        }
-
-        $order->status = 5;
-        $order->reach_time = Carbon::now();
-        $order->save();
-        return $this->success();
-    }
-
-    /**
      * 确认取货
      * @param Request $request
      * @return Response
@@ -229,9 +200,17 @@ class TransportController extends Base
         if (!$order){
             return $this->fail('订单不存在');
         }
-        if ($order->status != 5){
+        if ($order->status != 4){
             return $this->fail('订单状态错误');
         }
+
+        $lat = $request->lat;
+        $lng = $request->lng;
+        $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $order->warehouse->lng, $order->warehouse->lat);#骑手离仓库距离
+        if ($warehouse_distance > 1){
+            return $this->fail('骑手离仓库距离太远');
+        }
+
         $order->status = 6;
         $order->take_time = Carbon::now();
         $order->save();

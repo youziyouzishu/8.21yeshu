@@ -6,6 +6,12 @@
         <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css" />
         <link rel="stylesheet" href="/app/admin/component/jsoneditor/css/jsoneditor.css" />
         <link rel="stylesheet" href="/app/admin/admin/css/reset.css" />
+        <!-- 添加自定义样式 -->
+        <style>
+            .wide-column {
+                width: 200px; /* 设置商品名称列的宽度 */
+            }
+        </style>
     </head>
     <body>
 
@@ -48,6 +54,25 @@
                             <input type="text" name="freight" value="" class="layui-input">
                         </div>
                     </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">商品</label>
+                        <div class="layui-input-block">
+                            <table id="goodsTable" class="layui-table">
+                                <thead>
+                                    <tr>
+                                        <th class="wide-column">商品名称</th> <!-- 添加自定义类名 -->
+                                        <th>数量</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" onclick="addGoodsRow()">添加商品</button>
+                        </div>
+                    </div>
                     
                 </div>
             </div>
@@ -72,6 +97,8 @@
         <script src="/app/admin/admin/js/permission.js"></script>
         
         <script>
+            // 新增一个全局变量来记录当前的最大行号
+            let currentRowId = 1;
 
             // 相关接口
             const INSERT_API = "/admin/driver-orders/insert";
@@ -236,7 +263,112 @@
                 })
 
             });
-            
+
+
+
+            layui.use(["jquery", "xmSelect", "popup"], function() {
+                let value = layui.$("#goods_id_1").attr("value");
+                let initValue = value ? value.split(",") : [];
+                layui.xmSelect.render({
+                    el: '#goods_id_1',
+                    name: "goods_id[]",
+                    //配置搜索
+                    filterable: true,
+                    //配置远程分页
+                    clickClose: true,
+                    radio: true,
+                    remoteSearch:true,
+                    paging: true,
+                    pageRemote: true,
+                    initValue: initValue,
+                    template({ item, sels, name, value }){
+                        return item.id + '<span style="position: absolute; right: 10px; color: #8799a3">'+item.name+'</span>'
+                    },
+                    prop: {
+                        name: 'name',
+                        value: 'id',
+                    },
+                    //数据处理
+                    remoteMethod: function(val, cb, show, pageIndex){
+                        layui.$.ajax({
+                            url: "/admin/goods/select",
+                            dataType: "json",
+                            data: {
+                                name: ['like',val],
+                                type: 3,
+                                page: pageIndex,
+                            },
+                            success: function (res) {
+                                //回调需要两个参数, 第一个: 数据数组, 第二个: 总页码
+                                cb(res.data, res.count)
+                            }
+                        });
+                    }
+                })
+            });
+
+            // 添加商品行
+            function addGoodsRow() {
+                // 使用全局变量 currentRowId 来生成唯一的行号
+                let newRowId = currentRowId++;
+                let newRow = `
+                    <tr>
+                        <td>
+                            <div name="goods_id[]" id="goods_id_${newRowId}" required value="" ></div>
+                        </td>
+                        <td>
+                            <input type="number" name="goods_quantity[]" class="layui-input" min="1" value="1">
+                        </td>
+                        <td>
+                            <button type="button" class="pear-btn pear-btn-danger pear-btn-sm" onclick="removeGoodsRow(this)">删除</button>
+                        </td>
+                    </tr>
+                `;
+                layui.$("#goodsTable tbody").append(newRow);
+
+                // 动态渲染 xmSelect
+                layui.xmSelect.render({
+                    el: `#goods_id_${newRowId}`,
+                    name: "goods_id[]",
+                    //配置搜索
+                    filterable: true,
+                    //配置远程分页
+                    clickClose: true,
+                    radio: true,
+                    remoteSearch:true,
+                    paging: true,
+                    pageRemote: true,
+                    template({ item, sels, name, value }){
+                        return item.id + '<span style="position: absolute; right: 10px; color: #8799a3">'+item.name+'</span>'
+                    },
+                    prop: {
+                        name: 'name',
+                        value: 'id',
+                    },
+                    //数据处理
+                    remoteMethod: function(val, cb, show, pageIndex){
+                        layui.$.ajax({
+                            url: "/admin/goods/select",
+                            dataType: "json",
+                            data: {
+                                name: ['like',val],
+                                type: 3,
+                                page: pageIndex,
+                            },
+                            success: function (res) {
+                                //回调需要两个参数, 第一个: 数据数组, 第二个: 总页码
+                                cb(res.data, res.count)
+                            }
+                        });
+                    }
+                });
+            }
+
+            // 删除商品行
+            function removeGoodsRow(btn) {
+                layui.$(btn).closest("tr").remove();
+            }
+
             //提交事件
             layui.use(["form", "popup"], function () {
                 // 字段验证允许为空

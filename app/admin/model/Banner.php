@@ -38,7 +38,7 @@ class Banner extends Base
     protected $primaryKey = 'id';
 
 
-    
+
 
 
 }

@@ -15,27 +15,6 @@
                 <form class="layui-form top-search-from">
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">主键</label>
-                        <div class="layui-input-block">
-                            <input type="number" name="id" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">类型</label>
-                        <div class="layui-input-block">
-                            <div name="freight_type" id="freight_type" value="" ></div>
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">状态</label>
-                        <div class="layui-input-block">
-                            <div name="status" id="status" value="" ></div>
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
                         <label class="layui-form-label">创建时间</label>
                         <div class="layui-input-block">
                             <div class="layui-input-block" id="created_at">
@@ -72,18 +51,18 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.driverorders.insert">
-                <i class="layui-icon layui-icon-add-1"></i>发送订单
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.goods.insert">
+                <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
-            <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.driverorders.delete">
+            <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.goods.delete">
                 <i class="layui-icon layui-icon-delete"></i>删除
             </button>
         </script>
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.driverorders.update">编辑</button>
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.driverorders.delete">删除</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.goods.update">编辑</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.goods.delete">删除</button>
         </script>
 
         <script src="/app/admin/component/layui/layui.js?v=2.8.12"></script>
@@ -95,43 +74,11 @@
 
             // 相关常量
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/driver-orders/select";
-            const UPDATE_API = "/admin/driver-orders/update";
-            const DELETE_API = "/admin/driver-orders/delete";
-            const INSERT_URL = "/admin/driver-orders/insert";
-            const UPDATE_URL = "/admin/driver-orders/update";
-            
-            // 字段 类型:1=线上结算,2=线下结算 freight_type
-            layui.use(["jquery", "xmSelect"], function() {
-                let value = layui.$("#freight_type").attr("value");
-                let initValue = value ? value.split(",") : [];
-                layui.xmSelect.render({
-                    el: "#freight_type",
-                    name: "freight_type",
-                    filterable: true,
-                    initValue: initValue,
-                    data: [{"value":"1","name":"线上结算"},{"value":"2","name":"线下结算"}],
-                    model: {"icon":"hidden","label":{"type":"text"}},
-                    clickClose: true,
-                    radio: true,
-                })
-            });
-            
-            // 字段 状态:0=待分配,1=待接受,2=待取货,3=取消,4=配送中,5=完成 status
-            layui.use(["jquery", "xmSelect"], function() {
-                let value = layui.$("#status").attr("value");
-                let initValue = value ? value.split(",") : [];
-                layui.xmSelect.render({
-                    el: "#status",
-                    name: "status",
-                    filterable: true,
-                    initValue: initValue,
-                    data: [{"value":"0","name":"待分配"},{"value":"1","name":"待接受"},{"value":"2","name":"待取货"},{"value":"3","name":"取消"},{"value":"4","name":"配送中"},{"value":"5","name":"完成"}],
-                    model: {"icon":"hidden","label":{"type":"text"}},
-                    clickClose: true,
-                    radio: true,
-                })
-            });
+            const SELECT_API = "/admin/goods/select";
+            const UPDATE_API = "/admin/goods/update";
+            const DELETE_API = "/admin/goods/delete";
+            const INSERT_URL = "/admin/goods/insert";
+            const UPDATE_URL = "/admin/goods/update";
             
             // 字段 创建时间 created_at
             layui.use(["laydate"], function() {
@@ -158,30 +105,14 @@
 					},{
 						title: "主键",align: "center",
 						field: "id",
-						sort: true,
 					},{
-						title: "用户",align: "center",
-						field: "user_id",
-                        templet: function (d) {
-							return d.user? d.user.nickname : "";
-						}
-					},{
-						title: "发货仓库",align: "center",
-						field: "from_warehouse_id",
-                        templet: function (d) {
-							return d.from_warehouse? d.from_warehouse.name : "";
-						}
-					},{
-						title: "目的地",align: "center",
-						field: "to_warehouse_id",
-                        templet: function (d) {
-							return d.to_warehouse? d.to_warehouse.name : "";
-						}
+						title: "分类",align: "center",
+						field: "category_id",
 					},{
 						title: "类型",align: "center",
-						field: "freight_type",
+						field: "type",
 						templet: function (d) {
-							let field = "freight_type";
+							let field = "type";
 							if (typeof d[field] == "undefined") return "";
 							let items = [];
 							layui.each((d[field] + "").split(","), function (k , v) {
@@ -190,20 +121,41 @@
 							return util.escape(items.join(","));
 						}
 					},{
-						title: "运费",align: "center",
-						field: "freight",
+						title: "商品名称",align: "center",
+						field: "name",
 					},{
-						title: "状态",align: "center",
-						field: "status",
+						title: "图片",align: "center",
+						field: "image",
 						templet: function (d) {
-							let field = "status";
-							if (typeof d[field] == "undefined") return "";
-							let items = [];
-							layui.each((d[field] + "").split(","), function (k , v) {
-								items.push(apiResults[field][v] || v);
-							});
-							return util.escape(items.join(","));
+							return '<img src="'+encodeURI(d['image'])+'" style="max-width:32px;max-height:32px;" alt="" />'
 						}
+					},{
+						title: "轮播图",align: "center",
+						field: "images",
+                        templet: function (d) {
+                            let html = '';
+                            if(d['images']){
+                                const images = d['images'].split(',');
+
+                                for (let img of images) {
+                                    html += '<img src="' + encodeURI(img.trim()) + '" style="max-width:32px;max-height:32px;" alt="" />';
+                                }
+                            }
+
+                            return html;
+                        }
+					},{
+						title: "价格",align: "center",
+						field: "price",
+					},{
+						title: "押金",align: "center",
+						field: "deposit",
+					},{
+						title: "销量",align: "center",
+						field: "sales",
+					},{
+						title: "内容",align: "center",
+						field: "content",
 					},{
 						title: "创建时间",align: "center",
 						field: "created_at",
@@ -242,8 +194,7 @@
 				
 				// 获取表格中下拉或树形组件数据
 				let apiResults = {};
-				apiResults["freight_type"] = {"1":"线上结算","2":"线下结算"};
-				apiResults["status"] = ["待分配","待接受","待取货","取消","配送中","完成"];
+				apiResults["type"] = {"1":"椰树水机直购","2":"椰树水机租赁","3":"椰树长寿泉"};
                 // 编辑或删除行事件
                 table.on("tool(data-table)", function(obj) {
                     if (obj.event === "remove") {
@@ -308,10 +259,10 @@
                 let add = function() {
                     layer.open({
                         type: 2,
-                        title: "发送订单",
+                        title: "新增",
                         shade: 0.1,
                         maxmin: true,
-                        area: [common.isModile()?"100%":"900px", common.isModile()?"100%":"600px"],
+                        area: [common.isModile()?"100%":"500px", common.isModile()?"100%":"450px"],
                         content: INSERT_URL
                     });
                 }
