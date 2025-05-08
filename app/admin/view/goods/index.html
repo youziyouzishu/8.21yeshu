@@ -108,6 +108,9 @@
 					},{
 						title: "分类",align: "center",
 						field: "category_id",
+                        templet: function (d) {
+							return d.category? d.category.name : "";
+						}
 					},{
 						title: "类型",align: "center",
 						field: "type",

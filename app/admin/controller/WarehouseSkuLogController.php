@@ -4,18 +4,18 @@ namespace app\admin\controller;
 
 use support\Request;
 use support\Response;
-use app\admin\model\Goods;
+use app\admin\model\WarehouseSkuLog;
 use plugin\admin\app\controller\Crud;
 use support\exception\BusinessException;
 
 /**
- * 商品管理 
+ * 库存日志 
  */
-class GoodsController extends Crud
+class WarehouseSkuLogController extends Crud
 {
     
     /**
-     * @var Goods
+     * @var WarehouseSkuLog
      */
     protected $model = null;
 
@@ -25,7 +25,7 @@ class GoodsController extends Crud
      */
     public function __construct()
     {
-        $this->model = new Goods;
+        $this->model = new WarehouseSkuLog;
     }
     
     /**
@@ -34,7 +34,7 @@ class GoodsController extends Crud
      */
     public function index(): Response
     {
-        return view('goods/index');
+        return view('warehouse-sku-log/index');
     }
 
     /**
@@ -46,7 +46,7 @@ class GoodsController extends Crud
     public function select(Request $request): Response
     {
         [$where, $format, $limit, $field, $order] = $this->selectInput($request);
-        $query = $this->doSelect($where, $field, $order)->with(['category']);
+        $query = $this->doSelect($where, $field, $order)->with(['goods']);
         return $this->doFormat($query, $format, $limit);
     }
 
@@ -61,7 +61,7 @@ class GoodsController extends Crud
         if ($request->method() === 'POST') {
             return parent::insert($request);
         }
-        return view('goods/insert');
+        return view('warehouse-sku-log/insert');
     }
 
     /**
@@ -75,7 +75,7 @@ class GoodsController extends Crud
         if ($request->method() === 'POST') {
             return parent::update($request);
         }
-        return view('goods/update');
+        return view('warehouse-sku-log/update');
     }
 
 }

@@ -14,7 +14,7 @@ use support\Request;
 
 class OrdersController extends Base
 {
-    protected array $noNeedLogin = ['pay'];
+    protected array $noNeedLogin = [];
     /**
      * 支付
      * @param Request $request

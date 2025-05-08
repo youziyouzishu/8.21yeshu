@@ -66,9 +66,9 @@ class UserController extends Base
         if ($client_type == 'user') {
             $config = config('wechat.UserMiniApp');
         } elseif ($client_type == 'transport') {
-            $config = config('wechat.UserMiniApp');
+            $config = config('wechat.TransportMiniApp');
         } elseif ($client_type == 'driver') {
-            $config = config('wechat.UserMiniApp');
+            $config = config('wechat.DriverMiniApp');
         } else {
             return $this->fail('客户端类型错误');
         }

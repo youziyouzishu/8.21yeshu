@@ -26,6 +26,7 @@ use plugin\admin\app\model\Base;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\Shopcar> $shopcar
  * @property-read mixed $type_text
  * @property int $category_id 分类
+ * @property-read \app\admin\model\Category|null $category
  * @mixin \Eloquent
  */
 class Goods extends Base
@@ -62,6 +63,11 @@ class Goods extends Base
         $value = $value ?: ($this->type ?? '');
         $list = ['1' => '椰树水机直购', '2' => '椰树水机租赁', '3' => '椰树长寿泉'];
         return $list[$value] ?? '';
+    }
+
+    function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
 

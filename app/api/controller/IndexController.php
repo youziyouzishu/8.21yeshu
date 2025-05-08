@@ -5,13 +5,8 @@ namespace app\api\controller;
 use app\api\basic\Base;
 use Carbon\Carbon;
 use support\Request;
+use Workerman\Worker;
 
-use support\Response;
-use Webman\Openai\Chat;
-use Webman\Openai\Image;
-use Workerman\Protocols\Http\Chunk;
-use Workerman\Protocols\Http\ServerSentEvents;
-use Workerman\Timer;
 
 class IndexController extends Base
 {
@@ -20,20 +15,15 @@ class IndexController extends Base
 
     function index(Request $request)
     {
-
-        // 获取当前时间
-        $startTime = Carbon::now();
-
-        // 增加一天
-        $endTime = $startTime->copy()->addMinutes(30);
-
-        $diff = $endTime->diffForHumans($startTime);
-        dump($diff);
+        $data = "\x01\x02\x03\x04\x05\x06\x07\x08";
+        $result = unpack('C2chars/Sint/Nlong', $data);
+        dump($result);
     }
 
     function stringToBinary($string) {
         $binary = '';
         $unpacked = unpack('C*', $string); // 将字符串解包为字节数组
+        dump($unpacked);
         foreach ($unpacked as $byte) {
             $binary .= sprintf('%08b', $byte); // 将每个字节转为 8 位二进制
         }

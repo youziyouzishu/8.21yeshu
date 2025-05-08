@@ -5,6 +5,8 @@ namespace app\api\controller;
 use app\admin\model\Area;
 use app\admin\model\GoodsOrders;
 use app\admin\model\User;
+use app\admin\model\WarehouseSku;
+use app\admin\model\WarehouseSkuLog;
 use app\api\basic\Base;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -184,6 +186,31 @@ class TransportController extends Base
         $order->cancel_explain = $cancel_explain;
         $order->cancel_images = $cancel_images;
         $order->save();
+
+        $skus = $order->subs()->get();
+        $skus->each(function ($item) use($order) {
+            #减少仓库库存
+            $sku = WarehouseSku::where(['warehouse_id' => $order->warehouse_id, 'goods_id' => $item->goods_id])->first();
+            if ($sku) {
+                $sku->num -= $item->num;
+                $sku->save();
+            }else{
+                WarehouseSku::create([
+                    'warehouse_id' => $order->warehouse_id,
+                    'goods_id' => $item->goods_id,
+                    'num' => -$item->num,
+                ]);
+            }
+            #仓库库存变动记录
+            WarehouseSkuLog::create([
+                'warehouse_id' => $order->warehouse_id,
+                'goods_id' => $item->goods_id,
+                'num' => $item->num,
+                'type' => 1,
+                'remark' => '用户订单' . $order->ordersn . '出库',
+            ]);
+        });
+
         return $this->success();
     }
 

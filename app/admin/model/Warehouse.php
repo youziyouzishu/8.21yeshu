@@ -23,6 +23,7 @@ use plugin\admin\app\model\Base;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Warehouse query()
  * @property string|null $deleted_at 删除时间
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\User> $user
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\WarehouseSku> $sku
  * @mixin \Eloquent
  */
 class Warehouse extends Base
@@ -55,6 +56,11 @@ class Warehouse extends Base
     function user()
     {
         return $this->hasMany(User::class, 'warehouse_id','id');
+    }
+
+    function sku()
+    {
+        return $this->hasMany(WarehouseSku::class, 'warehouse_id','id');
     }
     
     

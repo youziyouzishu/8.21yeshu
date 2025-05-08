@@ -4,7 +4,8 @@ namespace app\api\controller;
 
 use app\admin\model\Area;
 use app\admin\model\DriverOrders;
-use app\admin\model\GoodsOrders;
+use app\admin\model\WarehouseSku;
+use app\admin\model\WarehouseSkuLog;
 use app\api\basic\Base;
 use Carbon\Carbon;
 use plugin\admin\app\model\Option;
@@ -19,7 +20,7 @@ class DriverController extends Base
         $status = $request->post('status');#1=待接单,2=待取货,3=配送中
         $lat = $request->lat;
         $lng = $request->lng;
-        $order = $request->post('order','asc');
+        $order = $request->post('order', 'asc');
 
         $config = Option::where('name', 'admin_config')->value('value');
         $config = json_decode($config);
@@ -36,31 +37,30 @@ class DriverController extends Base
                     $query->where('status', 4);
                 }
             })
-            ->orderBy('freight',$order)
+            ->orderBy('freight', $order)
             ->get();
 
-        foreach ($rows as $row){
+        foreach ($rows as $row) {
             $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $row->fromWarehouse->lng, $row->fromWarehouse->lat);#司机离仓库距离
             $address_distance = Area::getDistanceFromLngLat($row->fromWarehouse->lng, $row->fromWarehouse->lat, $row->toWarehouse->lng, $row->toWarehouse->lat);#仓库离收获地址距离
 
-            $row->setAttribute('warehouse_distance',$warehouse_distance);
-            $row->setAttribute('address_distance',$address_distance);
+            $row->setAttribute('warehouse_distance', $warehouse_distance);
+            $row->setAttribute('address_distance', $address_distance);
 
-            if ($row->status == 1){
+            if ($row->status == 1) {
                 $distance = $warehouse_distance;
             }
-            if ($row->status == 2){
+            if ($row->status == 2) {
                 $distance = $warehouse_distance;
             }
-            if ($row->status == 4){
+            if ($row->status == 4) {
                 $distance = $address_distance;
             }
             $mins = ceil($config->driver_speed * $distance);
-            $row->setAttribute('mins',$mins);
+            $row->setAttribute('mins', $mins);
         }
-        return $this->success('成功',$rows);
+        return $this->success('成功', $rows);
     }
-
 
 
     function getWorkDetail(Request $request)
@@ -81,19 +81,19 @@ class DriverController extends Base
         $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $row->fromWarehouse->lng, $row->fromWarehouse->lat);#司机离仓库距离
         $address_distance = Area::getDistanceFromLngLat($row->fromWarehouse->lng, $row->fromWarehouse->lat, $row->toWarehouse->lng, $row->toWarehouse->lat);#仓库离收获地址距离
 
-        $row->setAttribute('warehouse_distance',$warehouse_distance);
-        $row->setAttribute('address_distance',$address_distance);
-        if ($row->status == 1){
+        $row->setAttribute('warehouse_distance', $warehouse_distance);
+        $row->setAttribute('address_distance', $address_distance);
+        if ($row->status == 1) {
             $distance = $warehouse_distance;
         }
-        if ($row->status == 2){
+        if ($row->status == 2) {
             $distance = $warehouse_distance;
         }
-        if ($row->status == 4){
+        if ($row->status == 4) {
             $distance = $address_distance;
         }
         $mins = ceil($config->driver_speed * $distance);
-        $row->setAttribute('mins',$mins);
+        $row->setAttribute('mins', $mins);
         return $this->success('成功', $row);
     }
 
@@ -103,14 +103,14 @@ class DriverController extends Base
      * @param Request $request
      * @return Response
      */
-    function accept(Request $request):Response
+    function accept(Request $request): Response
     {
         $id = $request->post('id');
         $order = DriverOrders::find($id);
-        if (!$order){
+        if (!$order) {
             return $this->fail('订单不存在');
         }
-        if ($order->status != 0){
+        if ($order->status != 0) {
             return $this->fail('订单状态错误');
         }
 
@@ -147,20 +147,20 @@ class DriverController extends Base
      * @param Request $request
      * @return Response
      */
-    function cancel(Request $request):Response
+    function cancel(Request $request): Response
     {
         $id = $request->post('id');
         $cancel_reason = $request->post('cancel_reason');
         $cancel_explain = $request->post('cancel_explain');
         $cancel_images = $request->post('cancel_images');
-        if (!$cancel_reason){
+        if (!$cancel_reason) {
             return $this->fail('请填写取消原因');
         }
         $order = DriverOrders::find($id);
-        if (!$order){
+        if (!$order) {
             return $this->fail('订单不存在');
         }
-        if (!in_array($order->status,[3,4,5,6])){
+        if (!in_array($order->status, [3, 4, 5, 6])) {
             return $this->fail('订单状态错误');
         }
         $order->status = 0;#更改订单状态
@@ -173,27 +173,26 @@ class DriverController extends Base
     }
 
 
-
     /**
      * 确认取货
      * @param Request $request
      * @return Response
      */
-    function take(Request $request):Response
+    function take(Request $request): Response
     {
         $id = $request->post('id');
         $order = DriverOrders::find($id);
-        if (!$order){
+        if (!$order) {
             return $this->fail('订单不存在');
         }
-        if ($order->status != 2){
+        if ($order->status != 2) {
             return $this->fail('订单状态错误');
         }
 
         $lat = $request->lat;
         $lng = $request->lng;
         $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $order->fromWarehouse->lng, $order->fromWarehouse->lat);#骑手离仓库距离
-        if ($warehouse_distance > 1){
+        if ($warehouse_distance > 1) {
             return $this->fail('距离仓库太远');
         }
 
@@ -209,18 +208,18 @@ class DriverController extends Base
      * @param Request $request
      * @return Response
      */
-    function arrival(Request $request):Response
+    function arrival(Request $request): Response
     {
         $id = $request->post('id');
         $order = DriverOrders::find($id);
-        if (!$order){
+        if (!$order) {
             return $this->fail('订单不存在');
         }
-        if ($order->status != 4){
+        if ($order->status != 4) {
             return $this->fail('订单状态错误');
         }
         $arrival_time = Carbon::now();
-        if ($arrival_time->gt($order->timeout_time)){
+        if ($arrival_time->gt($order->timeout_time)) {
             $order->timeout_status = 2;#超时
         }
 
@@ -231,7 +230,85 @@ class DriverController extends Base
         $order->arrival_time = $arrival_time;
         $order->total_time = $total_time;
         $order->save();
+
+
+        $skus = $order->sku()->get();
+        $skus->each(function ($item) use($order) {
+            #增加仓库库存
+            $sku = WarehouseSku::where(['warehouse_id' => $order->to_warehouse_id, 'goods_id' => $item->goods_id])->first();
+            if ($sku) {
+                $sku->num += $item->num;
+                $sku->save();
+            }else{
+                WarehouseSku::create([
+                    'warehouse_id' => $order->to_warehouse_id,
+                    'goods_id' => $item->goods_id,
+                    'num' => $item->num,
+                ]);
+            }
+            #仓库库存变动记录
+            WarehouseSkuLog::create([
+                'warehouse_id' => $order->to_warehouse_id,
+                'goods_id' => $item->goods_id,
+                'num' => $item->num,
+                'type' => 2,
+                'remark' => '司机订单' . $order->ordersn . '入库',
+            ]);
+        });
+
+
         return $this->success();
+    }
+
+
+    function getWeekStatistic(Request $request)
+    {
+        $week = DriverOrders::where(['user_id' => $request->user_id])
+            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        return $this->success('成功', ['money' => $week->sum('freight'), 'count' => $week->count()]);
+    }
+
+
+    function getOrdersList(Request $request)
+    {
+        $status = $request->post('status');#订单状态:0 全部 1 已完成 2 已取消
+        $keyword = $request->post('keyword');
+        $date = $request->post('date');
+
+        $orders = DriverOrders::where(['user_id' => $request->user_id])
+            ->when(!empty($status) || $status == 0, function ($query) use ($status) {
+                if ($status == 0) {
+                    $query->whereIn('status', [3, 5]);
+                }
+                if ($status == 1) {
+                    $query->where('status', 5);
+                }
+                if ($status == 2) {
+                    $query->where('status', 3);
+                }
+            })
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->where('ordersn', $keyword);
+            })
+            ->when($date, function ($query) use ($date) {
+                $query->whereBetween('accept_time', $date);
+            })
+            ->get();
+        foreach ($orders as $order) {
+            if ($order->timeout_status == 1) {
+                //未超时
+                $end_time = Carbon::now();
+            } else {
+                $end_time = $order->arrival_time;
+            }
+            $diff = $end_time->diff($order->accept_time);
+            $hours = $diff->h + ($diff->d * 24); // 总小时数
+            $minutes = $diff->i; // 总分钟数
+            $seconds = $diff->s; // 总秒数
+            $timeDifference = "{$hours}小时{$minutes}分{$seconds}秒";
+            $order->setAttribute('time_difference', $timeDifference);
+        }
+        return $this->success('成功', $orders);
     }
 
 }

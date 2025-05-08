@@ -16,30 +16,37 @@
                 <div class="main-container mr-5">
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">封面</label>
+                        <label class="layui-form-label required">仓库</label>
                         <div class="layui-input-block">
-                            <img class="img-3" src=""/>
-                            <input type="text" style="display:none" name="image" value="" />
-                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="image"  permission="app.admin.upload.image">
-                                <i class="layui-icon layui-icon-upload"></i>上传图片
-                            </button>
-                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="attachment-choose-image"  permission="app.admin.upload.attachment">
-                                <i class="layui-icon layui-icon-align-left"></i>选择图片
-                            </button>
+                            <input type="number" name="warehouse_id" value="" required lay-verify="required" class="layui-input">
                         </div>
                     </div>
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">内容</label>
+                        <label class="layui-form-label required">商品</label>
                         <div class="layui-input-block">
-                            <textarea id="content" name="content" class="layui-textarea"></textarea>
+                            <input type="number" name="goods_id" value="" required lay-verify="required" class="layui-input">
                         </div>
                     </div>
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">权重</label>
+                        <label class="layui-form-label required">数量</label>
                         <div class="layui-input-block">
-                            <input type="number" name="weigh" value="" class="layui-input">
+                            <input type="number" name="num" value="" required lay-verify="required" class="layui-input">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <textarea name="mark" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">类型</label>
+                        <div class="layui-input-block">
+                            <div name="type" id="type" required value="" ></div>
                         </div>
                     </div>
                     
@@ -68,8 +75,8 @@
 
             // 相关接口
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/banner/select" + location.search;
-            const UPDATE_API = "/admin/banner/update";
+            const SELECT_API = "/admin/warehouse-sku-log/select" + location.search;
+            const UPDATE_API = "/admin/warehouse-sku-log/update";
             // 获取数据库记录
             layui.use(["form", "util", "popup"], function () {
                 let $ = layui.$;
@@ -107,46 +114,21 @@
                             }
                         });
                         
-                        // 字段 封面 image
-                        layui.use(["upload", "layer"], function() {
-                            let input = layui.$("#image").prev();
-                            input.prev().attr("src", input.val());
-                            layui.$("#attachment-choose-image").on("click", function() {
-                                parent.layer.open({
-                                    type: 2,
-                                    title: "选择附件",
-                                    content: "/app/admin/upload/attachment?ext=jpg,jpeg,png,gif,bmp",
-                                    area: ["95%", "90%"],
-                                    success: function (layero, index) {
-                                        parent.layui.$("#layui-layer" + index).data("callback", function (data) {
-                                            input.val(data.url).prev().attr("src", data.url);
-                                        });
-                                    }
-                                });
-                            });
-                            layui.upload.render({
-                                elem: "#image",
-                                acceptMime: "image/gif,image/jpeg,image/jpg,image/png",
-                                url: "/app/admin/upload/image",
-                                multiple: 0,
-                                field: "__file__",
-                                done: function (res) {
-                                    if (res.code > 0) return layui.layer.msg(res.msg);
-                                    this.item.prev().val(res.data.url).prev().attr("src", res.data.url);
-                                }
-                            });
-                        });
-                        
-                        // 字段 内容 content
-                        layui.use(["tinymce"], function() {
-                            var tinymce = layui.tinymce
-                            var edit = tinymce.render({
-                                elem: "#content",
-                                images_upload_url: "/app/admin/upload/image",
-                            });
-                            edit.on("blur", function(){
-                                layui.$("#content").val(edit.getContent());
-                            });
+                        // 字段 类型:1=出库,2=入库 type
+                        layui.use(["jquery", "xmSelect"], function() {
+                            let value = layui.$("#type").attr("value");
+                            let initValue = value ? value.split(",") : [];
+                            layui.xmSelect.render({
+                                el: "#type",
+                                name: "type",
+                                filterable: true,
+                                initValue: initValue,
+                                data: [{"value":"1","name":"出库"},{"value":"2","name":"入库"}],
+                                model: {"icon":"hidden","label":{"type":"text"}},
+                                clickClose: true,
+                                radio: true,
+                                layVerify: "required",
+                            })
                         });
                         
                         

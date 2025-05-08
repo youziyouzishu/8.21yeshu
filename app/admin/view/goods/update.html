@@ -18,7 +18,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">分类</label>
                         <div class="layui-input-block">
-                            <input type="number" name="category_id" value="" class="layui-input">
+                            <div name="category_id" id="category_id" ></div>
                         </div>
                     </div>
                     
@@ -179,6 +179,49 @@
                                 clickClose: true,
                                 radio: true,
                             })
+                        });
+
+                        layui.use(["jquery", "xmSelect", "popup"], function () {
+                            let value = layui.$("#category_id").attr("value");
+                            let initValue = value ? value.split(",") : [0];
+
+                            // 预加载默认值
+                            layui.$.ajax({
+                                url: "/admin/category/select?format=select&id=" + value,
+                                dataType: "json",
+                                success: function (result) {
+                                    layui.xmSelect.render({
+                                        el: '#category_id',
+                                        name: "category_id",
+                                        initValue: initValue,
+                                        data: result.data,
+                                        filterable: true,
+                                        clickClose: true,
+                                        radio: true,
+                                        remoteSearch: true,
+                                        template({item, sels, name, value}) {
+                                            return item.value + '<span style="position: absolute; right: 10px; color: #8799a3">' + item.name + '</span>';
+                                        },
+                                        prop: {
+                                            name: 'name',
+                                            value: 'value',
+                                        },
+                                        layVerify: "required",
+                                        remoteMethod: function (val, cb, show, pageIndex) {
+                                            layui.$.ajax({
+                                                url: "/admin/category/select?format=select",
+                                                dataType: "json",
+                                                data: {
+                                                    name: val,
+                                                },
+                                                success: function (res) {
+                                                    cb(res.data);
+                                                }
+                                            });
+                                        },
+                                    });
+                                }
+                            });
                         });
                         
                         // 字段 图片 image

@@ -15,30 +15,23 @@
                 <div class="main-container mr-5">
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">封面</label>
+                        <label class="layui-form-label">仓库</label>
                         <div class="layui-input-block">
-                            <img class="img-3" src=""/>
-                            <input type="text" style="display:none" name="image" value="" />
-                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="image"  permission="app.admin.upload.image">
-                                <i class="layui-icon layui-icon-upload"></i>上传图片
-                            </button>
-                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="attachment-choose-image"  permission="app.admin.upload.attachment">
-                                <i class="layui-icon layui-icon-align-left"></i>选择图片
-                            </button>
+                            <input type="number" name="warehouse_id" value="" class="layui-input">
                         </div>
                     </div>
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">内容</label>
+                        <label class="layui-form-label">商品</label>
                         <div class="layui-input-block">
-                            <textarea id="content" name="content" class="layui-textarea"></textarea>
+                            <input type="number" name="goods_id" value="" class="layui-input">
                         </div>
                     </div>
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">权重</label>
+                        <label class="layui-form-label">数量</label>
                         <div class="layui-input-block">
-                            <input type="number" name="weigh" value="0" class="layui-input">
+                            <input type="number" name="num" value="" class="layui-input">
                         </div>
                     </div>
                     
@@ -67,50 +60,7 @@
         <script>
             
             // 相关接口
-            const INSERT_API = "/admin/banner/insert";
-            
-            // 字段 封面 image
-            layui.use(["upload", "layer"], function() {
-                let input = layui.$("#image").prev();
-                input.prev().attr("src", input.val());
-                layui.$("#attachment-choose-image").on("click", function() {
-                    parent.layer.open({
-                        type: 2,
-                        title: "选择附件",
-                        content: "/app/admin/upload/attachment?ext=jpg,jpeg,png,gif,bmp",
-                        area: ["95%", "90%"],
-                        success: function (layero, index) {
-                            parent.layui.$("#layui-layer" + index).data("callback", function (data) {
-                                input.val(data.url).prev().attr("src", data.url);
-                            });
-                        }
-                    });
-                });
-                layui.upload.render({
-                    elem: "#image",
-                    value: "",
-                    acceptMime: "image/gif,image/jpeg,image/jpg,image/png",
-                    url: "/app/admin/upload/image",
-                    multiple: 0,
-                    field: "__file__",
-                    done: function (res) {
-                        if (res.code > 0) return layui.layer.msg(res.msg);
-                        this.item.prev().val(res.data.url).prev().attr("src", res.data.url);
-                    }
-                });
-            });
-            
-            // 字段 内容 content
-            layui.use(["tinymce"], function() {
-                var tinymce = layui.tinymce
-                var edit = tinymce.render({
-                    elem: "#content",
-                    images_upload_url: "/app/admin/upload/image",
-                });
-                edit.on("blur", function(){
-                    layui.$("#content").val(edit.getContent());
-                });
-            });
+            const INSERT_API = "/admin/warehouse-sku/insert";
             
             //提交事件
             layui.use(["form", "popup"], function () {
