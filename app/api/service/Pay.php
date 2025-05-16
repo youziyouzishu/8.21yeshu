@@ -22,6 +22,18 @@ class Pay
     public static function pay($pay_type, $pay_amount, $order_no, $mark, $attach)
     {
         $config = config('payment');
+        $client_type = request()->client_type;
+        if ($client_type == 'user'){
+            $default = 'UserMiniApp';
+        }elseif ($client_type == 'transport'){
+            $default = 'TransportMiniApp';
+        }elseif ($client_type == 'driver'){
+            $default = 'DriverMiniApp';
+        }else{
+            throw new \Exception('客户端类型错误');
+        }
+
+
         if ($pay_type == 1) {
             $result = \Yansongda\Pay\Pay::wechat($config)->mini([
                 'out_trade_no' => $order_no,
@@ -33,7 +45,8 @@ class Pay
                 'payer' => [
                     'openid' => request()->openid,
                 ],
-                'attach' => $attach
+                'attach' => $attach,
+                '_config' => $default,
             ]);
         } else {
             throw new \Exception('支付类型错误');

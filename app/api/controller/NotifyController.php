@@ -63,7 +63,9 @@ class NotifyController extends Base
             switch ($paytype) {
                 case 'wechat':
                     $pay = Pay::wechat($config);
-                    $res = $pay->callback($request->post());
+                    $res = $pay->callback($request->post(),[
+                        '_config' => 'DriverMiniApp'
+                    ]);
                     $res = $res->resource;
                     $res = $res['ciphertext'];
                     $trade_state = $res['trade_state'];
