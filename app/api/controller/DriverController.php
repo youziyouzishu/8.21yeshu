@@ -264,6 +264,7 @@ class DriverController extends Base
     function getWeekStatistic(Request $request)
     {
         $week = DriverOrders::where(['user_id' => $request->user_id])
+            ->where('status',5)
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
         return $this->success('成功', ['money' => $week->sum('freight'), 'count' => $week->count()]);
     }
@@ -307,6 +308,12 @@ class DriverController extends Base
             $seconds = $diff->s; // 总秒数
             $timeDifference = "{$hours}小时{$minutes}分{$seconds}秒";
             $order->setAttribute('time_difference', $timeDifference);
+
+            $warehouse_distance = Area::getDistanceFromLngLat($order->accept_lng, $order->accept_lat, $order->fromWarehouse->lng, $order->fromWarehouse->lat);#骑手离仓库距离
+            $address_distance = Area::getDistanceFromLngLat($order->fromWarehouse->lng, $order->fromWarehouse->lat, $order->toWarehouse->lng, $order->toWarehouse->lat);#仓库离收获地址距离
+
+            $order->setAttribute('warehouse_distance',$warehouse_distance);
+            $order->setAttribute('address_distance',$address_distance);
         }
         return $this->success('成功', $orders);
     }

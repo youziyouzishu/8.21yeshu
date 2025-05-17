@@ -2,8 +2,10 @@
 
 namespace app\api\controller;
 
+use app\admin\model\GoodsOrdersAssess;
 use app\api\basic\Base;
 use Carbon\Carbon;
+use support\Db;
 use support\Request;
 use Workerman\Worker;
 
@@ -15,9 +17,7 @@ class IndexController extends Base
 
     function index(Request $request)
     {
-        $data = "\x01\x02\x03\x04\x05\x06\x07\x08";
-        $result = unpack('C2chars/Sint/Nlong', $data);
-        dump($result);
+
     }
 
     function stringToBinary($string) {

@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\admin\model\Area;
 use app\admin\model\GoodsOrders;
+use app\admin\model\GoodsOrdersAssess;
 use app\admin\model\User;
 use app\admin\model\WarehouseSku;
 use app\admin\model\WarehouseSkuLog;
@@ -11,6 +12,7 @@ use app\api\basic\Base;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use plugin\admin\app\model\Option;
+use support\Db;
 use support\Request;
 use support\Response;
 
@@ -277,6 +279,11 @@ class TransportController extends Base
     }
 
 
+    /**
+     * 获取本周统计
+     * @param Request $request
+     * @return Response
+     */
     function getWeekStatistic(Request $request)
     {
         $transport_id = $request->user_id;
@@ -320,6 +327,11 @@ class TransportController extends Base
     }
 
 
+    /**
+     * 获取订单统计
+     * @param Request $request
+     * @return Response
+     */
     function getOrdersStatistic(Request $request)
     {
         $today = Carbon::today();
@@ -334,6 +346,11 @@ class TransportController extends Base
         ]);
     }
 
+    /**
+     * 获取订单列表
+     * @param Request $request
+     * @return Response
+     */
     function getOrdersList(Request $request)
     {
         $status = $request->post('status');#订单状态:0 全部 1 已完成 2 已取消
@@ -382,6 +399,31 @@ class TransportController extends Base
             $order->setAttribute('address_distance',$address_distance);
         }
         return $this->success('成功', $orders);
+    }
+
+    /**
+     * 获取评价列表
+     * @param Request $request
+     * @return Response
+     */
+    function getAssessList(Request $request)
+    {
+        $satisfied = $request->post('satisfied');#满意:-1=全部,0=否,1=是
+        $ids = GoodsOrdersAssess::select(
+            Db::raw('MAX(id) as id'),
+        )->where('transport_id',$request->user_id)->where(function ($query)use($satisfied){
+            if ($satisfied == 0){
+                $query->where('satisfied',0);
+            }elseif ($satisfied == 1){
+                $query->where('satisfied',1);
+            }
+        })->groupBy('order_id')->pluck('id');
+
+        $query = GoodsOrdersAssess::whereIn('id',$ids);
+        $transport_score = $query->avg('transport_score');
+        $transport_score = round($transport_score,1);
+        $list = $query->paginate()->items();
+        return $this->success('成功',['list'=>$list,'avg_score'=>$transport_score]);
     }
     
 
