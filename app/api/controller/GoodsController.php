@@ -7,6 +7,7 @@ use app\admin\model\Category;
 use app\admin\model\DeliveryConfig;
 use app\admin\model\Goods;
 use app\admin\model\GoodsOrders;
+use app\admin\model\GoodsOrdersAssess;
 use app\admin\model\Shopcar;
 use app\admin\model\UsersAddress;
 use app\admin\model\UsersCoupon;
@@ -311,6 +312,26 @@ GoodsController extends Base
         } else {
             return $this->fail('超出最大配送范围');
         }
+    }
+
+    /**
+     * 评价列表
+     * @param Request $request
+     * @return Response
+     */
+    function getAssessList(Request $request)
+    {
+        $id = $request->post('id');
+        $goods = Goods::find($id);
+        if (!$goods){
+            return $this->fail('商品不存在');
+        }
+        $rows = GoodsOrdersAssess::where(['goods_id' => $id])->with(['user'])->orderBy('id', 'desc')->paginate()->items();
+        $total = GoodsOrdersAssess::where(['goods_id' => $id])->count();
+        $good = GoodsOrdersAssess::where(['goods_id' => $id])->where('goods_score','>',3)->count();
+        $normal = GoodsOrdersAssess::where(['goods_id' => $id])->where('goods_score',3)->count();
+        $bad = GoodsOrdersAssess::where(['goods_id' => $id])->where('goods_score','<',3)->count();
+        return $this->success('成功', ['list'=>$rows, 'total'=>$total, 'good'=>$good, 'normal'=>$normal, 'bad'=>$bad]);
     }
 
 

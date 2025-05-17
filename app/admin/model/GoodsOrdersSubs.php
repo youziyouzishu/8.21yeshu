@@ -23,6 +23,7 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrdersSubs query()
  * @property-read \app\admin\model\Goods|null $goods
  * @property-read \app\admin\model\GoodsOrders|null $orders
+ * @property-read \app\admin\model\GoodsOrdersAssess|null $assess
  * @mixin \Eloquent
  */
 class GoodsOrdersSubs extends Base
@@ -57,6 +58,11 @@ class GoodsOrdersSubs extends Base
     function orders()
     {
         return $this->belongsTo(GoodsOrders::class, 'order_id', 'id');
+    }
+
+    function assess()
+    {
+        return $this->hasOne(GoodsOrdersAssess::class, 'sub_id', 'id');
     }
 
 

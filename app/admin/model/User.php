@@ -117,6 +117,7 @@ class User extends Base
             Db::connection('plugin.admin.mysql')->commit();
         } catch (\Throwable $e) {
             Db::connection('plugin.admin.mysql')->rollback();
+            throw $e;
         }
     }
 

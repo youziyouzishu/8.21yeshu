@@ -39,10 +39,10 @@ class TransportController extends Base
             ->with(['address', 'warehouse'])
             ->when(!empty($status), function (Builder $query) use ($status) {
                 if ($status == 1) {
-                    $query->whereIn('status', [3, 4]);
+                    $query->where('status', 3);
                 }
                 if ($status == 2) {
-                    $query->where('status', 5);
+                    $query->where('status', 4);
                 }
                 if ($status == 3) {
                     $query->where('status', 6);
@@ -268,10 +268,11 @@ class TransportController extends Base
         $diff = $arrival_time->diff($order->accept_time);
         $total_time = $diff->i + ($diff->h * 60) + ($diff->d * 24); // 总分钟数
         $order->status = 7;
-        $order->settle_status = 2;#待结算
+        $order->settle_status = 2;#已结算
         $order->arrival_time = $arrival_time;
         $order->total_time = $total_time;
         $order->save();
+        User::money($order->freight, $order->transport_id, '配送完成');
         return $this->success();
     }
 
@@ -280,6 +281,7 @@ class TransportController extends Base
     {
         $transport_id = $request->user_id;
         $week = GoodsOrders::where(['transport_id' => $transport_id])
+            ->where('status',7)
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
         return $this->success('成功', ['money'=>$week->sum('freight'),'count'=>$week->count()]);
     }
@@ -339,6 +341,7 @@ class TransportController extends Base
         $date = $request->post('date');
         $transport_id = $request->user_id;
         $orders = GoodsOrders::where(['transport_id' => $transport_id])
+            ->with(['address','warehouse'])
             ->when(!empty($status) || $status == 0, function ($query) use ($status) {
                 if ($status == 0) {
                     $query->whereIn('status', [2,7]);
@@ -358,6 +361,7 @@ class TransportController extends Base
             })
             ->get();
         foreach ($orders as $order) {
+
             if ($order->timeout_status == 1){
                 //未超时
                 $end_time = Carbon::now();
@@ -370,6 +374,12 @@ class TransportController extends Base
             $seconds = $diff->s; // 总秒数
             $timeDifference = "{$hours}小时{$minutes}分{$seconds}秒";
             $order->setAttribute('time_difference', $timeDifference);
+
+            $warehouse_distance = Area::getDistanceFromLngLat($order->accept_lng, $order->accept_lat, $order->warehouse->lng, $order->warehouse->lat);#骑手离仓库距离
+            $address_distance = Area::getDistanceFromLngLat($order->warehouse->lng, $order->warehouse->lat, $order->address->lng, $order->address->lat);#仓库离收获地址距离
+
+            $order->setAttribute('warehouse_distance',$warehouse_distance);
+            $order->setAttribute('address_distance',$address_distance);
         }
         return $this->success('成功', $orders);
     }

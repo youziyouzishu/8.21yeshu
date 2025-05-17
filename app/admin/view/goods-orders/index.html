@@ -166,7 +166,7 @@
                     name: "status",
                     filterable: true,
                     initValue: initValue,
-                    data: [{"value":"0","name":"待支付"},{"value":"1","name":"待商家接单"},{"value":"2","name":"取消"},{"value":"3","name":"待骑手接单"},{"value":"4","name":"待骑手到店"},{"value":"5","name":"待骑手取货"},{"value":"6","name":"配送中"},{"value":"7","name":"配送完成"},{"value":"8","name":"退款成功"},{"value":"9","name":"订单完成"}],
+                    data: [{"value":"0","name":"待支付"},{"value":"1","name":"待商家接单"},{"value":"2","name":"取消"},{"value":"3","name":"待骑手接单"},{"value":"4","name":"待骑手取货"},{"value":"5","name":"待骑手取货"},{"value":"6","name":"配送中"},{"value":"7","name":"配送完成"},{"value":"8","name":"退款成功"},{"value":"9","name":"订单完成"}],
                     model: {"icon":"hidden","label":{"type":"text"}},
                     clickClose: true,
                     radio: true,
@@ -375,7 +375,7 @@
 				// 获取表格中下拉或树形组件数据
 				let apiResults = {};
 				apiResults["delivery_type"] = {"1":"立即配送","2":"预约配送"};
-				apiResults["status"] = ["待支付","待商家接单","取消","待骑手接单","待骑手到店","待骑手取货","配送中","配送完成","退款成功","订单完成"];
+				apiResults["status"] = ["待支付","待商家接单","取消","待骑手接单","待骑手取货","待骑手取货","配送中","配送完成","退款成功","订单完成"];
 				apiResults["pay_type"] = ["无","微信","余额"];
                 // 编辑或删除行事件
                 table.on("tool(data-table)", function(obj) {

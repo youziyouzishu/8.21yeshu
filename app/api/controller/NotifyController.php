@@ -112,7 +112,6 @@ class NotifyController extends Base
 
             switch ($attach) {
                 case 'goods':
-                    dump($out_trade_no);
                     $order = GoodsOrders::where(['ordersn' => $out_trade_no, 'status' => 0])->first();
                     if (!$order) {
                         throw new \Exception('订单不存在');

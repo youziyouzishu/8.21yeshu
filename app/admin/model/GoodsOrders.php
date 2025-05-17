@@ -32,7 +32,7 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrders newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrders newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrders query()
- * @property int $status 状态:0=待支付,1=待商家接单,2=取消,3=待骑手接单,4=待骑手到店,5=待骑手取货,6=配送中,7=配送完成,8=退款成功,9=订单完成
+ * @property int $status 状态:0=待支付,1=待商家接单,2=取消,3=待骑手接单,4=待骑手取货,5=待骑手取货(已废弃),6=配送中,7=配送完成,8=退款成功,9=订单完成
  * @property-read mixed $status_text
  * @property \Illuminate\Support\Carbon|null $cancel_time 取消时间
  * @property \Illuminate\Support\Carbon|null $confirm_time 确认时间
@@ -190,10 +190,10 @@ class GoodsOrders extends Base
             1 => '待商家接单',
             2 => '取消',
             3 => '待骑手接单',
-            4 => '待骑手到店',
+            4 => '待骑手取货',
             5 => '待骑手取货',
             6 => '配送中',
-            7 => '配送完成',
+            7 => '待评价',
             8 => '退款成功',
             9 => '订单完成',
         ];

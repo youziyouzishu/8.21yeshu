@@ -59,8 +59,17 @@
                         </div>
                     </div>
 
+                    <?php if ($client_type != 'user'): ?>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">状态</label>
+                        <label class="layui-form-label">开工状态</label>
+                        <div class="layui-input-block">
+                            <div name="work_status" id="work_status" value="" ></div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">封禁状态</label>
                         <div class="layui-input-block">
                             <input type="checkbox" id="status" lay-filter="status" lay-skin="switch" />
                             <input type="text" style="display:none" name="status" value="1" />
@@ -197,6 +206,33 @@
                                 layui.$('input[name="status"]').val(this.checked ? 1 : 0);
                             });
                         })
+
+
+                        layui.use(["jquery", "xmSelect"], function() {
+                            let value = layui.$("#work_status").attr("value");
+                            let initValue = value ? value.split(",") : [];
+                            let data = [{"value":"0","name":"否"},{"value":"1","name":"是"},{"value":"2","name":"关闭"}]
+                            if (value === "0"){
+                                data = [{"value":"0","name":"否"},{"value":"1","name":"是"}]
+                            }
+                            if (value === "1"){
+                                data = [{"value":"0","name":"否"},{"value":"1","name":"是"}]
+                            }
+                            if (value === "2"){
+                                data = [{"value":"0","name":"否"},{"value":"2","name":"关闭"}]
+                            }
+                            let statusSelect = layui.xmSelect.render({
+                                el: "#work_status",
+                                name: "work_status",
+                                filterable: true,
+                                initValue: initValue,
+                                data: data,
+                                model: {"icon":"hidden","label":{"type":"text"}},
+                                clickClose: true,
+                                radio: true,
+                            })
+                            statusSelect.setValue(initValue,false,true);
+                        });
 
                         // ajax产生错误
                         if (res.code) {

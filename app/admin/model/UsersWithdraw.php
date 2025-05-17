@@ -32,6 +32,7 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UsersWithdraw withoutTrashed()
  * @property-read mixed $status_text
  * @property-read \app\admin\model\User|null $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at 删除时间
  * @mixin \Eloquent
  */
 class UsersWithdraw extends Base

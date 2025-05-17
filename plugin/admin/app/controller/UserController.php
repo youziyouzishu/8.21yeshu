@@ -60,11 +60,11 @@ class UserController extends Crud
      */
     public function update(Request $request): Response
     {
+        $id = $request->input('id');
+        $user = \app\admin\model\User::find($id);
         if ($request->method() === 'POST') {
-            $id = $request->post('id');
             $status = $request->post('status');
             $warehouse_id = $request->post('warehouse_id');
-            $user = \app\admin\model\User::find($id);
             if ($user->client_type == 'transport' && empty($warehouse_id)){
                 return $this->fail('请选择所属仓库');
             }
@@ -74,7 +74,7 @@ class UserController extends Crud
             }
             return parent::update($request);
         }
-        return raw_view('user/update');
+        return raw_view('user/update',['client_type' => $user->client_type]);
     }
 
 }

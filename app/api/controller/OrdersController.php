@@ -3,6 +3,7 @@
 namespace app\api\controller;
 
 use app\admin\model\GoodsOrders;
+use app\admin\model\GoodsOrdersSubs;
 use app\admin\model\User;
 use app\api\basic\Base;
 use app\api\service\Pay;
@@ -111,7 +112,7 @@ class OrdersController extends Base
         $order = GoodsOrders::where(['user_id' => $request->user_id, 'id' => $id])
             ->with(['subs' => function ($query) {
                 $query->with(['goods']);
-            }])
+            },'address','warehouse','transport'])
             ->first();
         if (!$order) {
             return $this->fail('订单不存在');
@@ -148,18 +149,69 @@ class OrdersController extends Base
     function confirm(Request $request)
     {
         $id = $request->post('id');
-        $order = GoodsOrders::where(['user_id' => $request->user_id, 'id' => $id])->first();
-        if (!$order) {
+        $order = GoodsOrders::find($id);
+        if (!$order){
             return $this->fail('订单不存在');
         }
-        if ($order->status != 6) {
+        if ($order->status != 6){
             return $this->fail('订单状态错误');
         }
+        $arrival_time = Carbon::now();
+        if ($arrival_time->gt($order->timeout_time)){
+            $order->timeout_status = 2;#超时
+        }
+        $diff = $arrival_time->diff($order->accept_time);
+        $total_time = $diff->i + ($diff->h * 60) + ($diff->d * 24); // 总分钟数
         $order->status = 7;
-        $order->confirm_time = Carbon::now();
+        $order->settle_status = 2;#已结算
+        $order->arrival_time = $arrival_time;
+        $order->total_time = $total_time;
         $order->save();
-        return  $this->success('成功');
+        User::money($order->freight, $order->transport_id, '配送完成');
+        return $this->success();
     }
+
+    /**
+     * 评价
+     * @param Request $request
+     * @return \support\Response
+     */
+    function assess(Request $request)
+    {
+        $id = $request->post('id');
+        $goods_score = $request->post('goods_score');
+        $goods_content = $request->post('goods_content');
+        $image = $request->post('image');
+        $transport_score = $request->post('transport_score');
+        $transport_content = $request->post('transport_content');
+        $satisfied = $request->post('satisfied');
+        $order = GoodsOrders::find($id);
+        if (!$order){
+            return $this->fail('订单不存在');
+        }
+        if ($order->status != 7){
+            return $this->fail('订单状态错误');
+        }
+        $order->subs->each(function (GoodsOrdersSubs $item) use ($goods_score, $goods_content, $image, $transport_score, $transport_content, $satisfied){
+            $item->assess()->create([
+                'order_id' => $item->order_id,
+                'user_id' => $item->orders->user_id,
+                'goods_id' => $item->goods_id,
+                'goods_score' => $goods_score,
+                'goods_content' => $goods_content,
+                'image' => $image,
+                'transport_id' => $item->orders->transport_id,
+                'transport_score' => $transport_score,
+                'transport_content' => $transport_content,
+                'satisfied' => $satisfied,
+            ]);
+        });
+        $order->status = 9;
+        $order->save();
+        return $this->success();
+    }
+
+
 
 
 }

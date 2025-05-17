@@ -54,7 +54,8 @@ class AccountController extends Base
                 'openid' => $openid,
                 'unionid' => $unionid,
                 'client_type' => $client_type,
-                'status' => $client_type == 'user' ? 1 : 0,#用户端默认为启用
+                'work_status' => $client_type == 'user' ? 1 : 2,#用户端默认为启用
+                'status' => 1,
             ]);
         }
 
@@ -62,7 +63,7 @@ class AccountController extends Base
         $user->last_ip = $request->getRealIp();
         $user->save();
         if ($user->status == 0){
-            return  $this->fail('请联系管理员开启账号');
+            return  $this->fail('账号被封禁');
         }
         $token = JwtToken::generateToken([
             'id' => $user->id,
