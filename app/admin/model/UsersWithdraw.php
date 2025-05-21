@@ -10,7 +10,7 @@ use support\Db;
 
 
 /**
- * 
+ *
  *
  * @property int $id 主键
  * @property int $user_id 用户
@@ -71,6 +71,11 @@ class UsersWithdraw extends Base
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    function bankcard()
+    {
+        return $this->belongsTo(UsersBankcard::class, 'bankcard_id', 'id');
     }
 
     function getStatusTextAttribute($value)
