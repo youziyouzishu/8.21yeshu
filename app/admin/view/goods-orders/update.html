@@ -140,19 +140,23 @@
                                 clickClose: true,
                                 radio: true,
                                 on: function(data){
+                                    console.log(111111);
                                     //arr:  当前多选已选中的数据
                                     var arr = data.arr;
                                     //change, 此次选择变化的数据,数组
                                     var change = data.change;
                                     //isAdd, 此次操作是新增还是删除
                                     var isAdd = data.isAdd;
-                                    console.error(arr)
-                                    console.error(change)
-                                    console.error(isAdd)
                                     if (change[0].value === "3"){
+                                        console.log(222222);
                                         $(".distribute_type").removeClass("layui-hide")
+                                        $(".transport_id").removeClass("layui-hide")
+
                                     }else{
+                                        console.log(3333333);
                                         $(".distribute_type").addClass("layui-hide")
+                                        $(".transport_id").addClass("layui-hide")
+
                                     }
                                 },
                             })
@@ -226,19 +230,18 @@
                                     var change = data.change;
                                     //isAdd, 此次操作是新增还是删除
                                     var isAdd = data.isAdd;
+                                    console.log('aaa');
                                     if (change[0].value === "1"){
+                                        console.log('bbb');
                                         $(".transport_id").removeClass("layui-hide")
                                     }else{
+                                        console.log('ccc');
                                         $(".transport_id").addClass("layui-hide")
                                     }
                                 },
                             })
-                            distribute_typeSelect.setValue(initValue,false,true);
-                        });
-                        
 
-                        
-                        
+                        });
                         // ajax返回失败
                         if (res.code) {
                             layui.popup.failure(res.msg);

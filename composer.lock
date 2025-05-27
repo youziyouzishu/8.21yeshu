@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "30d774841df3b33f6f6846cfcc4ec661",
+    "content-hash": "091f6bd269448bad378480f3b3a2b833",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -2449,6 +2449,60 @@
                 "source": "https://github.com/Nyholm/psr7-server/tree/1.1.0"
             },
             "time": "2023-11-08T09:30:43+00:00"
+        },
+        {
+            "name": "overtrue/easy-sms",
+            "version": "3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/overtrue/easy-sms.git",
+                "reference": "9d9d643624ebfa377cc5237768d9dcc0be61a173"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/overtrue/easy-sms/zipball/9d9d643624ebfa377cc5237768d9dcc0be61a173",
+                "reference": "9d9d643624ebfa377cc5237768d9dcc0be61a173",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^6.2 || ^7.0",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.54",
+                "jetbrains/phpstorm-attributes": "^1.0",
+                "mockery/mockery": "^1.4.2",
+                "phpunit/phpunit": "^9.5.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Overtrue\\EasySms\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "overtrue",
+                    "email": "i@overtrue.me"
+                }
+            ],
+            "description": "The easiest way to send short message.",
+            "support": {
+                "issues": "https://github.com/overtrue/easy-sms/issues",
+                "source": "https://github.com/overtrue/easy-sms/tree/3.1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/overtrue",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-04-23T06:21:18+00:00"
         },
         {
             "name": "overtrue/socialite",

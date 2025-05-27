@@ -110,7 +110,7 @@ class DriverController extends Base
         if (!$order) {
             return $this->fail('订单不存在');
         }
-        if ($order->status != 0) {
+        if ($order->status != 1) {
             return $this->fail('订单状态错误');
         }
 
@@ -160,7 +160,7 @@ class DriverController extends Base
         if (!$order) {
             return $this->fail('订单不存在');
         }
-        if (!in_array($order->status, [3, 4, 5, 6])) {
+        if (!in_array($order->status, [3, 4, 5])) {
             return $this->fail('订单状态错误');
         }
         $order->status = 0;#更改订单状态
@@ -192,9 +192,9 @@ class DriverController extends Base
         $lat = $request->lat;
         $lng = $request->lng;
         $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $order->fromWarehouse->lng, $order->fromWarehouse->lat);#骑手离仓库距离
-        if ($warehouse_distance > 1) {
-            return $this->fail('距离仓库太远');
-        }
+//        if ($warehouse_distance > 1) {
+//            return $this->fail('距离仓库太远');
+//        }
 
         $order->status = 4;
         $order->take_time = Carbon::now();
@@ -226,7 +226,7 @@ class DriverController extends Base
         $diff = $arrival_time->diff($order->accept_time);
         $total_time = $diff->i + ($diff->h * 60) + ($diff->d * 24); // 总分钟数
         $order->status = 5;
-        $order->settle_status = 2;#待结算
+        $order->settle_status = 2;#已结算
         $order->arrival_time = $arrival_time;
         $order->total_time = $total_time;
         $order->save();
@@ -316,6 +316,58 @@ class DriverController extends Base
             $order->setAttribute('address_distance',$address_distance);
         }
         return $this->success('成功', $orders);
+    }
+
+    /**
+     * 结算列表
+     * @param Request $request
+     * @return Response
+     */
+    function getSettleList(Request $request)
+    {
+        $date = $request->post('date', Carbon::now());
+        $date = Carbon::parse($date);
+        // 提取年份和月份
+        $year = $date->year;
+        $month = $date->month;
+        $transport_id = $request->user_id;
+        $orders = DriverOrders::where(['user_id' => $transport_id])
+            ->select(['freight','accept_time','ordersn'])
+            ->whereYear('accept_time', $year)
+            ->whereMonth('accept_time', $month)
+            ->latest()
+            ->get()
+            ->groupBy(function ($order) {
+                return $order->accept_time->toDateString();
+            });
+        $result = [];
+        foreach ($orders as $date => $orderList) {
+            $result[] = [
+                'date' => $date,
+                'list' => $orderList->toArray()
+            ];
+        }
+
+        return $this->success('成功', $result);
+    }
+
+    /**
+     * 获取订单统计
+     * @param Request $request
+     * @return Response
+     */
+    function getOrdersStatistic(Request $request)
+    {
+        $today = Carbon::today();
+        $transport_id = $request->user_id;
+        $orders = DriverOrders::where(['user_id' => $transport_id])
+            ->whereDate('accept_time', $today);
+        return $this->success('成功', [
+            'arrival_count' => $orders->where('status', 5)->count(),
+            'cancel_count' => $orders->where('status', 3)->count(),
+            'ontime_rate' => $orders->where('status', 5)->count() / ($orders->count() == 0? 1 : $orders->count()) * 100 . '%',
+            'avg_time' => $orders->where('status', 5)->avg('total_time') . '分钟'
+        ]);
     }
 
 }

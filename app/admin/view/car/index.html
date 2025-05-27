@@ -15,6 +15,13 @@
                 <form class="layui-form top-search-from">
                     
                     <div class="layui-form-item">
+                        <label class="layui-form-label">主键</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="id" value="" class="layui-input">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
                         <label class="layui-form-label">创建时间</label>
                         <div class="layui-input-block">
                             <div class="layui-input-block" id="created_at">
@@ -51,18 +58,18 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.goods.insert">
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.car.insert">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
-            <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.goods.delete">
+            <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.car.delete">
                 <i class="layui-icon layui-icon-delete"></i>删除
             </button>
         </script>
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.goods.update">编辑</button>
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.goods.delete">删除</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.car.update">编辑</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.car.delete">删除</button>
         </script>
 
         <script src="/app/admin/component/layui/layui.js?v=2.8.12"></script>
@@ -74,11 +81,11 @@
 
             // 相关常量
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/goods/select";
-            const UPDATE_API = "/admin/goods/update";
-            const DELETE_API = "/admin/goods/delete";
-            const INSERT_URL = "/admin/goods/insert";
-            const UPDATE_URL = "/admin/goods/update";
+            const SELECT_API = "/admin/car/select";
+            const UPDATE_API = "/admin/car/update";
+            const DELETE_API = "/admin/car/delete";
+            const INSERT_URL = "/admin/car/insert";
+            const UPDATE_URL = "/admin/car/update";
             
             // 字段 创建时间 created_at
             layui.use(["laydate"], function() {
@@ -105,57 +112,19 @@
 					},{
 						title: "主键",align: "center",
 						field: "id",
+						sort: true,
 					},{
-						title: "分类",align: "center",
-						field: "category_id",
-                        templet: function (d) {
-							return d.category? d.category.name : "";
-						}
-					},{
-						title: "类型",align: "center",
-						field: "type",
-						templet: function (d) {
-							let field = "type";
-							if (typeof d[field] == "undefined") return "";
-							let items = [];
-							layui.each((d[field] + "").split(","), function (k , v) {
-								items.push(apiResults[field][v] || v);
-							});
-							return util.escape(items.join(","));
-						}
-					},{
-						title: "商品名称",align: "center",
+						title: "车辆名称",align: "center",
 						field: "name",
 					},{
-						title: "图片",align: "center",
+						title: "车辆图片",align: "center",
 						field: "image",
-						templet: function (d) {
-							return '<img src="'+encodeURI(d['image'])+'" style="max-width:32px;max-height:32px;" alt="" />'
-						}
 					},{
-						title: "轮播图",align: "center",
-						field: "images",
-                        templet: function (d) {
-                            let html = '';
-                            if(d['images']){
-                                const images = d['images'].split(',');
-
-                                for (let img of images) {
-                                    html += '<img src="' + encodeURI(img.trim()) + '" style="max-width:32px;max-height:32px;" alt="" />';
-                                }
-                            }
-
-                            return html;
-                        }
+						title: "车辆颜色",align: "center",
+						field: "color",
 					},{
-						title: "价格",align: "center",
-						field: "price",
-					},{
-						title: "押金",align: "center",
-						field: "deposit",
-					},{
-						title: "销量",align: "center",
-						field: "sales",
+						title: "所属仓库",align: "center",
+						field: "warehouse_id",
 					},{
 						title: "创建时间",align: "center",
 						field: "created_at",
@@ -192,9 +161,7 @@
 				    }
 				});
 				
-				// 获取表格中下拉或树形组件数据
-				let apiResults = {};
-				apiResults["type"] = {"1":"椰树水机直购","2":"椰树水机租赁","3":"椰树长寿泉"};
+				
                 // 编辑或删除行事件
                 table.on("tool(data-table)", function(obj) {
                     if (obj.event === "remove") {

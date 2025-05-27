@@ -89,7 +89,7 @@ class OrdersController extends Base
             })
             ->with(['subs' => function ($query) {
                 $query->with(['goods']);
-            }])
+            },'warehouse'])
             ->orderByDesc('id')
             ->paginate()
             ->getCollection()
@@ -163,6 +163,7 @@ class OrdersController extends Base
         $diff = $arrival_time->diff($order->accept_time);
         $total_time = $diff->i + ($diff->h * 60) + ($diff->d * 24); // 总分钟数
         $order->status = 7;
+        $order->confirm_time = $arrival_time;
         $order->settle_status = 2;#已结算
         $order->arrival_time = $arrival_time;
         $order->total_time = $total_time;

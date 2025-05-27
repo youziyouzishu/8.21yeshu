@@ -39,6 +39,7 @@ class WarehouseSku extends Base
 
     protected $fillable = [
         'warehouse_id',
+        'goods_id',
         'sku_id',
         'num',
     ];

@@ -154,7 +154,7 @@ class TransportController extends Base
         $order->settle_status = 1;
         $order->timeout_status = 1;
         $order->total_distance = $total_distance;
-        $order->timeout_time = $accept_time->addMinutes($mins);
+        $order->timeout_time = $accept_time->copy()->addMinutes($mins);
         $order->save();
 
         return $this->success();
@@ -189,30 +189,6 @@ class TransportController extends Base
         $order->cancel_images = $cancel_images;
         $order->save();
 
-        $skus = $order->subs()->get();
-        $skus->each(function ($item) use($order) {
-            #减少仓库库存
-            $sku = WarehouseSku::where(['warehouse_id' => $order->warehouse_id, 'goods_id' => $item->goods_id])->first();
-            if ($sku) {
-                $sku->num -= $item->num;
-                $sku->save();
-            }else{
-                WarehouseSku::create([
-                    'warehouse_id' => $order->warehouse_id,
-                    'goods_id' => $item->goods_id,
-                    'num' => -$item->num,
-                ]);
-            }
-            #仓库库存变动记录
-            WarehouseSkuLog::create([
-                'warehouse_id' => $order->warehouse_id,
-                'goods_id' => $item->goods_id,
-                'num' => $item->num,
-                'type' => 1,
-                'remark' => '用户订单' . $order->ordersn . '出库',
-            ]);
-        });
-
         return $this->success();
     }
 
@@ -236,13 +212,38 @@ class TransportController extends Base
         $lat = $request->lat;
         $lng = $request->lng;
         $warehouse_distance = Area::getDistanceFromLngLat($lng, $lat, $order->warehouse->lng, $order->warehouse->lat);#骑手离仓库距离
-        if ($warehouse_distance > 1){
-            return $this->fail('骑手离仓库距离太远');
-        }
+//        if ($warehouse_distance > 1){
+//            return $this->fail('骑手离仓库距离太远');
+//        }
 
         $order->status = 6;
         $order->take_time = Carbon::now();
         $order->save();
+
+
+        $skus = $order->subs()->get();
+        $skus->each(function ($item) use($order) {
+            #减少仓库库存
+            $sku = WarehouseSku::where(['warehouse_id' => $order->warehouse_id, 'goods_id' => $item->goods_id])->first();
+            if ($sku) {
+                $sku->num -= $item->num;
+                $sku->save();
+            }else{
+                WarehouseSku::create([
+                    'warehouse_id' => $order->warehouse_id,
+                    'goods_id' => $item->goods_id,
+                    'num' => -$item->num,
+                ]);
+            }
+            #仓库库存变动记录
+            WarehouseSkuLog::create([
+                'warehouse_id' => $order->warehouse_id,
+                'goods_id' => $item->goods_id,
+                'num' => $item->num,
+                'type' => 1,
+                'remark' => '用户订单' . $order->ordersn . '出库',
+            ]);
+        });
         return $this->success();
     }
 
