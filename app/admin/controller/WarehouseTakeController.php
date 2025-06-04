@@ -38,6 +38,8 @@ class WarehouseTakeController extends Crud
         return view('warehouse-take/index');
     }
 
+
+
     /**
      * 插入
      * @param Request $request
@@ -45,6 +47,20 @@ class WarehouseTakeController extends Crud
      * @throws BusinessException
      */
     public function insert(Request $request): Response
+    {
+        if ($request->method() === 'POST') {
+            return parent::insert($request);
+        }
+        return view('warehouse-take/insert');
+    }
+
+    /**
+     * 盘点
+     * @param Request $request
+     * @return Response
+     * @throws BusinessException
+     */
+    public function take(Request $request): Response
     {
         $warehouse_id = $request->input('warehouse_id');
         if ($request->method() === 'POST') {
@@ -59,7 +75,7 @@ class WarehouseTakeController extends Crud
             $ret->log()->createMany($goods_list);
         }
         $sku = WarehouseSku::with(['goods'])->where('warehouse_id',$warehouse_id)->get();
-        return view('warehouse-take/insert',['sku'=>$sku,'warehouse_id'=>$warehouse_id]);
+        return view('warehouse-take/take',['sku'=>$sku,'warehouse_id'=>$warehouse_id]);
     }
 
     /**

@@ -6,7 +6,6 @@
         <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css" />
         <link rel="stylesheet" href="/app/admin/component/jsoneditor/css/jsoneditor.css" />
         <link rel="stylesheet" href="/app/admin/admin/css/reset.css" />
-
     </head>
     <body>
 
@@ -15,23 +14,7 @@
             <div class="mainBox">
                 <div class="main-container mr-5">
 
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">商品</label>
-                        <div class="layui-input-block">
-                            <table id="goodsTable" class="layui-table">
-                                <thead>
-                                <tr>
-                                    <th class="wide-column">商品名称</th> <!-- 添加自定义类名 -->
-                                    <th>数量</th>
-                                </tr>
-                                </thead>
-                                <tbody>
 
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
                 </div>
             </div>
 
@@ -46,61 +29,18 @@
                     </button>
                 </div>
             </div>
-            
+
         </form>
 
         <script src="/app/admin/component/layui/layui.js?v=2.8.12"></script>
         <script src="/app/admin/component/pear/pear.js"></script>
         <script src="/app/admin/component/jsoneditor/jsoneditor.js"></script>
         <script src="/app/admin/admin/js/permission.js"></script>
-        
+
         <script>
-            let rowIndex = 0; // 全局变量，记录当前行号
-            // 新增一个全局变量来记录当前的最大行号
+
             // 相关接口
             const INSERT_API = "/admin/warehouse-take/insert";
-            
-            // 字段 状态:0=待审核,1=通过,2=驳回 status
-            layui.use(["jquery", "xmSelect"], function() {
-                let value = layui.$("#status").attr("value");
-                let initValue = value ? value.split(",") : [];
-                layui.xmSelect.render({
-                    el: "#status",
-                    name: "status",
-                    filterable: true,
-                    initValue: initValue,
-                    data: [{"value":"0","name":"待审核"},{"value":"1","name":"通过"},{"value":"2","name":"驳回"}],
-                    model: {"icon":"hidden","label":{"type":"text"}},
-                    clickClose: true,
-                    radio: true,
-                    layVerify: "required",
-                })
-            });
-            var skuList = <?= ($sku) ?>;
-            var warehouse_id = <?= ($warehouse_id) ?>;
-            if (skuList && skuList.length > 0) {
-                skuList.forEach(function (item) {
-                    addGoodsRow(item.goods_id, item.goods.name);
-                });
-            }
-            // 添加商品行
-            function addGoodsRow(goodsId = '',goodsName = '') {
-                let newRow = `
-                    <tr>
-                        <td>
-                            <input type="text" readonly class="layui-input" value="${goodsName}">
-                            <input type="hidden" name="goods_list[${rowIndex}][goods_id]" class="layui-input" value="${goodsId}">
-                        </td>
-                        <td>
-                            <input type="number" name="goods_list[${rowIndex}][num]" class="layui-input" min="1" value="">
-                        </td>
-                    </tr>
-
-                `;
-                layui.$("#goodsTable tbody").append(newRow);
-                rowIndex++; // 每添加一行，索引加 1
-            }
-
 
             //提交事件
             layui.use(["form", "popup"], function () {
@@ -114,7 +54,6 @@
                     identity: [/(^$)|(^\d{15}$)|(^\d{17}(x|X|\d)$)/, "请输入正确的身份证号"]
                 });
                 layui.form.on("submit(save)", function (data) {
-                    data.field.warehouse_id = warehouse_id
                     layui.$.ajax({
                         url: INSERT_API,
                         type: "POST",
