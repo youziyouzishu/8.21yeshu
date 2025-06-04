@@ -2,6 +2,8 @@
 
 namespace app\admin\controller;
 
+use app\admin\model\WarehouseSku;
+use app\admin\model\WarehouseTake;
 use support\Request;
 use support\Response;
 use app\admin\model\Warehouse;
@@ -63,6 +65,30 @@ class WarehouseController extends Crud
             return parent::update($request);
         }
         return view('warehouse/update');
+    }
+
+    /**
+     * 盘点
+     * @param Request $request
+     * @return Response
+     * @throws BusinessException
+     */
+    public function take(Request $request): Response
+    {
+        $warehouse_id = $request->input('warehouse_id');
+        if ($request->method() === 'POST') {
+            $goods_list = $request->input('goods_list');
+            foreach ($goods_list as &$item){
+                $num_real = WarehouseSku::where('warehouse_id',$warehouse_id)->where('goods_id',$item['goods_id'])->value('num');
+                $item['difference'] = $item['num'] - $num_real;
+            }
+            $ret = WarehouseTake::create([
+                'warehouse_id' => $warehouse_id,
+            ]);
+            $ret->log()->createMany($goods_list);
+        }
+        $sku = WarehouseSku::with(['goods'])->where('warehouse_id',$warehouse_id)->get();
+        return view('warehouse/take',['sku'=>$sku,'warehouse_id'=>$warehouse_id]);
     }
 
 }

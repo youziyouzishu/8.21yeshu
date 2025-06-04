@@ -69,7 +69,7 @@
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="sku" permission="admin.warehousesku.select">库存</button>
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="take" permission="admin.warehousetake.take">盘点</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="take" permission="admin.warehouse.take">盘点</button>
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="log" permission="admin.warehouseskulog.select">日志</button>
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.warehouse.update">编辑</button>
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.warehouse.delete">删除</button>
@@ -289,7 +289,7 @@
                         shade: 0.1,
                         maxmin: true,
                         area: [common.isModile()?"100%":"50%", common.isModile()?"100%":"70%"],
-                        content: '/admin/warehouse-take/take' + "?" + 'warehouse_id' + "=" + value
+                        content: '/admin/warehouse/take' + "?" + 'warehouse_id' + "=" + value
                     });
                 }
 
