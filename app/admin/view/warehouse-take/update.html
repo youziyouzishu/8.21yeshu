@@ -16,37 +16,30 @@
                 <div class="main-container mr-5">
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label required">车辆名称</label>
+                        <label class="layui-form-label">操作者</label>
                         <div class="layui-input-block">
-                            <input type="text" name="name" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">车辆图片</label>
-                        <div class="layui-input-block">
-                            <img class="img-3" src=""/>
-                            <input type="text" style="display:none" name="image" value="" />
-                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="image"  permission="app.admin.upload.image">
-                                <i class="layui-icon layui-icon-upload"></i>上传图片
-                            </button>
-                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="attachment-choose-image"  permission="app.admin.upload.attachment">
-                                <i class="layui-icon layui-icon-align-left"></i>选择图片
-                            </button>
+                            <input type="number" name="operate_id" value="" class="layui-input">
                         </div>
                     </div>
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label required">车辆颜色</label>
+                        <label class="layui-form-label required">仓库</label>
                         <div class="layui-input-block">
-                            <input type="text" name="color" value="" required lay-verify="required" class="layui-input">
+                            <input type="number" name="warehouse_id" value="" required lay-verify="required" class="layui-input">
                         </div>
                     </div>
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label">所属仓库</label>
+                        <label class="layui-form-label required">状态</label>
                         <div class="layui-input-block">
-                            <div name="warehouse_id" id="warehouse_id" value="" ></div>
+                            <div name="status" id="status" required value="" ></div>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <textarea name="mark" class="layui-textarea"></textarea>
                         </div>
                     </div>
                     
@@ -75,8 +68,8 @@
 
             // 相关接口
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/car/select" + location.search;
-            const UPDATE_API = "/admin/car/update";
+            const SELECT_API = "/admin/warehouse-take/select" + location.search;
+            const UPDATE_API = "/admin/warehouse-take/update";
             // 获取数据库记录
             layui.use(["form", "util", "popup"], function () {
                 let $ = layui.$;
@@ -113,79 +106,22 @@
                                 });
                             }
                         });
-
-                        layui.use(["jquery", "xmSelect", "popup"], function () {
-                            let value = layui.$("#warehouse_id").attr("value");
-                            let initValue = value ? value.split(",") : [0];
-
-                            // 预加载默认值
-                            layui.$.ajax({
-                                url: "/admin/warehouse/select?format=select&id=" + value,
-                                dataType: "json",
-                                success: function (result) {
-                                    layui.xmSelect.render({
-                                        el: '#warehouse_id',
-                                        name: "warehouse_id",
-                                        initValue: initValue,
-                                        data: result.data,
-                                        filterable: true,
-                                        clickClose: true,
-                                        radio: true,
-                                        remoteSearch: true,
-                                        template({item, sels, name, value}) {
-                                            return item.value + '<span style="position: absolute; right: 10px; color: #8799a3">' + item.name + '</span>';
-                                        },
-                                        prop: {
-                                            name: 'name',
-                                            value: 'value',
-                                        },
-                                        layVerify: "required",
-                                        remoteMethod: function (val, cb, show, pageIndex) {
-                                            layui.$.ajax({
-                                                url: "/admin/warehouse/select?format=select",
-                                                dataType: "json",
-                                                data: {
-                                                    name: val,
-                                                },
-                                                success: function (res) {
-                                                    cb(res.data);
-                                                }
-                                            });
-                                        },
-                                    });
-                                }
-                            });
-                        });
-
-
-                        // 字段 图片 image
-                        layui.use(["upload", "layer"], function() {
-                            let input = layui.$("#image").prev();
-                            input.prev().attr("src", input.val());
-                            layui.$("#attachment-choose-image").on("click", function() {
-                                parent.layer.open({
-                                    type: 2,
-                                    title: "选择附件",
-                                    content: "/app/admin/upload/attachment?ext=jpg,jpeg,png,gif,bmp",
-                                    area: ["95%", "90%"],
-                                    success: function (layero, index) {
-                                        parent.layui.$("#layui-layer" + index).data("callback", function (data) {
-                                            input.val(data.url).prev().attr("src", data.url);
-                                        });
-                                    }
-                                });
-                            });
-                            layui.upload.render({
-                                elem: "#image",
-                                acceptMime: "image/gif,image/jpeg,image/jpg,image/png",
-                                url: "/app/admin/upload/image",
-                                multiple: 0,
-                                field: "__file__",
-                                done: function (res) {
-                                    if (res.code > 0) return layui.layer.msg(res.msg);
-                                    this.item.prev().val(res.data.url).prev().attr("src", res.data.url);
-                                }
-                            });
+                        
+                        // 字段 状态:0=待审核,1=通过,2=驳回 status
+                        layui.use(["jquery", "xmSelect"], function() {
+                            let value = layui.$("#status").attr("value");
+                            let initValue = value ? value.split(",") : [];
+                            layui.xmSelect.render({
+                                el: "#status",
+                                name: "status",
+                                filterable: true,
+                                initValue: initValue,
+                                data: [{"value":"0","name":"待审核"},{"value":"1","name":"通过"},{"value":"2","name":"驳回"}],
+                                model: {"icon":"hidden","label":{"type":"text"}},
+                                clickClose: true,
+                                radio: true,
+                                layVerify: "required",
+                            })
                         });
                         
                         

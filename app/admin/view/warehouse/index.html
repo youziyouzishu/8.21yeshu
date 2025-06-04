@@ -69,6 +69,7 @@
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="sku" permission="admin.warehousesku.select">库存</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="take" permission="admin.warehousetake.insert">盘点</button>
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="log" permission="admin.warehouseskulog.select">日志</button>
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.warehouse.update">编辑</button>
             <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.warehouse.delete">删除</button>
@@ -186,6 +187,8 @@
                         sku(obj);
                     } else if (obj.event === "log") {
                         log(obj);
+                    } else if (obj.event === "take") {
+                        take(obj);
                     }
                 });
 
@@ -274,6 +277,19 @@
                         maxmin: true,
                         area: [common.isModile()?"100%":"90%", common.isModile()?"100%":"90%"],
                         content: '/admin/warehouse-sku/index' + "?" + 'warehouse_id' + "=" + value
+                    });
+                }
+
+
+                let take = function(obj) {
+                    let value = obj.data[PRIMARY_KEY];
+                    layer.open({
+                        type: 2,
+                        title: '盘点',
+                        shade: 0.1,
+                        maxmin: true,
+                        area: [common.isModile()?"100%":"50%", common.isModile()?"100%":"70%"],
+                        content: '/admin/warehouse-take/insert' + "?" + 'warehouse_id' + "=" + value
                     });
                 }
 
