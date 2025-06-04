@@ -268,21 +268,18 @@ GoodsController extends Base
                     $shopcar->delete();
                 }
                 $pay_amount = $total_goods_amount + $freight;
-                $coupons = UsersCoupon::where(['user_id' => $request->user_id, 'status' => 1])
+                $coupon = UsersCoupon::where(['user_id' => $request->user_id, 'status' => 1])
                     ->where(function ($query) use ($pay_amount) {
                         $query->where('type', 1)->orWhere(function ($query) use ($pay_amount) {
                             $query->where('type', 2)->where('with_amount', '<=', $pay_amount);
                         });
                     })
-                    ->get();
-                if (!empty($coupon_id)) {
-                    $coupon = $coupons->firstWhere('id', 1);
-                    if (!$coupon) {
-                        return $this->fail('无效优惠券');
-                    }
+                    ->where('id',$coupon_id)
+                    ->first();
+                if (!empty($coupon)) {
                     $coupon_amount = $coupon->amount; // 获取优惠券额度
-                    $pay_amount = $pay_amount - $coupon_amount;
-                    $coupon->delete();
+                    $pay_amount = $pay_amount - $coupon_amount; // 扣除优惠券金额
+                    $coupon->delete(); // 删除已使用的优惠券
                 }
                 $order = GoodsOrders::create([
                     'user_id' => $request->user_id,

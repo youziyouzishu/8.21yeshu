@@ -34,11 +34,11 @@
                             <input type="text" name="color" value="" required lay-verify="required" class="layui-input">
                         </div>
                     </div>
-                    
+
                     <div class="layui-form-item">
                         <label class="layui-form-label">所属仓库</label>
                         <div class="layui-input-block">
-                            <input type="number" name="warehouse_id" value="" class="layui-input">
+                            <div name="warehouse_id" id="warehouse_id" ></div>
                         </div>
                     </div>
                     
@@ -68,7 +68,40 @@
             
             // 相关接口
             const INSERT_API = "/admin/car/insert";
-            
+
+            layui.use(["jquery", "xmSelect", "popup"], function () {
+                let value = layui.$("#warehouse_id").attr("value");
+                let initValue = value ? value.split(",") : [0];
+                layui.xmSelect.render({
+                    el: '#warehouse_id',
+                    name: "warehouse_id",
+                    initValue: initValue,
+                    filterable: true,
+                    clickClose: true,
+                    radio: true,
+                    remoteSearch: true,
+                    template({item, sels, name, value}) {
+                        return item.value + '<span style="position: absolute; right: 10px; color: #8799a3">' + item.name + '</span>';
+                    },
+                    prop: {
+                        name: 'name',
+                        value: 'value',
+                    },
+                    layVerify: "required",
+                    remoteMethod: function (val, cb, show, pageIndex) {
+                        layui.$.ajax({
+                            url: "/admin/warehouse/select?format=select",
+                            dataType: "json",
+                            data: {
+                                name: val,
+                            },
+                            success: function (res) {
+                                cb(res.data);
+                            }
+                        });
+                    }
+                });
+            });
             //提交事件
             layui.use(["form", "popup"], function () {
                 // 字段验证允许为空

@@ -21,6 +21,27 @@
                         </div>
                     </div>
 
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">昵称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="nickname" value="" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">手机号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="mobile" value="" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">客户端类型</label>
+                        <div class="layui-input-block">
+                            <div name="client_type" id="client_type" value="" ></div>
+                        </div>
+                    </div>
+
                     
                     <div class="layui-form-item layui-inline">
                         <label class="layui-form-label"></label>
@@ -75,9 +96,23 @@
             const DELETE_API = "/app/admin/user/delete";
             const INSERT_URL = "/app/admin/user/insert";
             const UPDATE_URL = "/app/admin/user/update";
-            
 
-            
+
+            layui.use(["jquery", "xmSelect"], function() {
+                let value = layui.$("#client_type").attr("value");
+                let initValue = value ? value.split(",") : [];
+                layui.xmSelect.render({
+                    el: "#client_type",
+                    name: "client_type",
+                    filterable: true,
+                    initValue: initValue,
+                    data: [{"value":"user","name":"用户端"},{"value":"transport","name":"配送端"},{"value":"driver","name":"司机端"}],
+                    model: {"icon":"hidden","label":{"type":"text"}},
+                    clickClose: true,
+                    radio: true,
+                })
+            });
+
             // 表格渲染
             layui.use(["table", "form", "common", "popup", "util"], function() {
                 let table = layui.table;

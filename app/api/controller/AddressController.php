@@ -39,7 +39,6 @@ class AddressController extends Base
             'lat' => $lat,
             'lng' => $lng,
         ];
-
         if ($data['default'] == 0) {
             $existingDefault = UsersAddress::where(['user_id' => $request->user_id, 'default' => 1])->first();
             if (!$existingDefault) {
@@ -48,7 +47,6 @@ class AddressController extends Base
         } else {
             UsersAddress::where(['user_id' => $request->user_id, 'default' => 1])->update(['default' => 0]);
         }
-
         UsersAddress::create($data);
         return $this->success();
     }

@@ -14,32 +14,12 @@
 
             <div class="mainBox">
                 <div class="main-container mr-5">
+
                     
                     <div class="layui-form-item">
-                        <label class="layui-form-label required">车辆名称</label>
+                        <label class="layui-form-label">状态</label>
                         <div class="layui-input-block">
-                            <input type="text" name="name" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">车辆图片</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="image" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">车辆颜色</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="color" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">所属仓库</label>
-                        <div class="layui-input-block">
-                            <div name="warehouse_id" id="warehouse_id" value="" ></div>
+                            <div name="status" id="status" value="" ></div>
                         </div>
                     </div>
                     
@@ -68,8 +48,8 @@
 
             // 相关接口
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/car/select" + location.search;
-            const UPDATE_API = "/admin/car/update";
+            const SELECT_API = "/admin/privacy-service/select" + location.search;
+            const UPDATE_API = "/admin/privacy-service/update";
             // 获取数据库记录
             layui.use(["form", "util", "popup"], function () {
                 let $ = layui.$;
@@ -106,48 +86,67 @@
                                 });
                             }
                         });
-
-                        layui.use(["jquery", "xmSelect", "popup"], function () {
-                            let value = layui.$("#warehouse_id").attr("value");
-                            let initValue = value ? value.split(",") : [0];
-
-                            // 预加载默认值
-                            layui.$.ajax({
-                                url: "/admin/warehouse/select?format=select&id=" + value,
-                                dataType: "json",
-                                success: function (result) {
-                                    layui.xmSelect.render({
-                                        el: '#warehouse_id',
-                                        name: "warehouse_id",
-                                        initValue: initValue,
-                                        data: result.data,
-                                        filterable: true,
-                                        clickClose: true,
-                                        radio: true,
-                                        remoteSearch: true,
-                                        template({item, sels, name, value}) {
-                                            return item.value + '<span style="position: absolute; right: 10px; color: #8799a3">' + item.name + '</span>';
-                                        },
-                                        prop: {
-                                            name: 'name',
-                                            value: 'value',
-                                        },
-                                        layVerify: "required",
-                                        remoteMethod: function (val, cb, show, pageIndex) {
-                                            layui.$.ajax({
-                                                url: "/admin/warehouse/select?format=select",
-                                                dataType: "json",
-                                                data: {
-                                                    name: val,
-                                                },
-                                                success: function (res) {
-                                                    cb(res.data);
-                                                }
-                                            });
-                                        },
-                                    });
+                        
+                        // 字段 类型:1=水机维修,2=水机清洗 type
+                        layui.use(["jquery", "xmSelect"], function() {
+                            let value = layui.$("#type").attr("value");
+                            let initValue = value ? value.split(",") : [];
+                            layui.xmSelect.render({
+                                el: "#type",
+                                name: "type",
+                                filterable: true,
+                                initValue: initValue,
+                                data: [{"value":"1","name":"水机维修"},{"value":"2","name":"水机清洗"}],
+                                model: {"icon":"hidden","label":{"type":"text"}},
+                                clickClose: true,
+                                radio: true,
+                            })
+                        });
+                        
+                        // 字段 图片 image
+                        layui.use(["upload", "layer"], function() {
+                            let input = layui.$("#image").prev();
+                            input.prev().attr("src", input.val());
+                            layui.$("#attachment-choose-image").on("click", function() {
+                                parent.layer.open({
+                                    type: 2,
+                                    title: "选择附件",
+                                    content: "/app/admin/upload/attachment?ext=jpg,jpeg,png,gif,bmp",
+                                    area: ["95%", "90%"],
+                                    success: function (layero, index) {
+                                        parent.layui.$("#layui-layer" + index).data("callback", function (data) {
+                                            input.val(data.url).prev().attr("src", data.url);
+                                        });
+                                    }
+                                });
+                            });
+                            layui.upload.render({
+                                elem: "#image",
+                                acceptMime: "image/gif,image/jpeg,image/jpg,image/png",
+                                url: "/app/admin/upload/image",
+                                multiple: 0,
+                                field: "__file__",
+                                done: function (res) {
+                                    if (res.code > 0) return layui.layer.msg(res.msg);
+                                    this.item.prev().val(res.data.url).prev().attr("src", res.data.url);
                                 }
                             });
+                        });
+                        
+                        // 字段 状态:1=待受理,2=已受理,3=已取消,4=已完成 status
+                        layui.use(["jquery", "xmSelect"], function() {
+                            let value = layui.$("#status").attr("value");
+                            let initValue = value ? value.split(",") : [];
+                            layui.xmSelect.render({
+                                el: "#status",
+                                name: "status",
+                                filterable: true,
+                                initValue: initValue,
+                                data: [{"value":"1","name":"待受理"},{"value":"2","name":"已受理"},{"value":"3","name":"已取消"},{"value":"4","name":"已完成"}],
+                                model: {"icon":"hidden","label":{"type":"text"}},
+                                clickClose: true,
+                                radio: true,
+                            })
                         });
                         
                         

@@ -22,6 +22,20 @@
                     </div>
                     
                     <div class="layui-form-item">
+                        <label class="layui-form-label">类型</label>
+                        <div class="layui-input-block">
+                            <div name="type" id="type" value="" ></div>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <div name="status" id="status" value="" ></div>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
                         <label class="layui-form-label">创建时间</label>
                         <div class="layui-input-block">
                             <div class="layui-input-block" id="created_at">
@@ -58,18 +72,18 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.car.insert">
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.privacyservice.insert">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
-            <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.car.delete">
+            <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.privacyservice.delete">
                 <i class="layui-icon layui-icon-delete"></i>删除
             </button>
         </script>
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.car.update">编辑</button>
-            <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.car.delete">删除</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="edit" permission="admin.privacyservice.update">编辑</button>
+            <button class="pear-btn pear-btn-xs tool-btn" lay-event="remove" permission="admin.privacyservice.delete">删除</button>
         </script>
 
         <script src="/app/admin/component/layui/layui.js?v=2.8.12"></script>
@@ -81,11 +95,43 @@
 
             // 相关常量
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/car/select";
-            const UPDATE_API = "/admin/car/update";
-            const DELETE_API = "/admin/car/delete";
-            const INSERT_URL = "/admin/car/insert";
-            const UPDATE_URL = "/admin/car/update";
+            const SELECT_API = "/admin/privacy-service/select";
+            const UPDATE_API = "/admin/privacy-service/update";
+            const DELETE_API = "/admin/privacy-service/delete";
+            const INSERT_URL = "/admin/privacy-service/insert";
+            const UPDATE_URL = "/admin/privacy-service/update";
+            
+            // 字段 类型:1=水机维修,2=水机清洗 type
+            layui.use(["jquery", "xmSelect"], function() {
+                let value = layui.$("#type").attr("value");
+                let initValue = value ? value.split(",") : [];
+                layui.xmSelect.render({
+                    el: "#type",
+                    name: "type",
+                    filterable: true,
+                    initValue: initValue,
+                    data: [{"value":"1","name":"水机维修"},{"value":"2","name":"水机清洗"}],
+                    model: {"icon":"hidden","label":{"type":"text"}},
+                    clickClose: true,
+                    radio: true,
+                })
+            });
+            
+            // 字段 状态:1=待受理,2=已受理,3=已取消,4=已完成 status
+            layui.use(["jquery", "xmSelect"], function() {
+                let value = layui.$("#status").attr("value");
+                let initValue = value ? value.split(",") : [];
+                layui.xmSelect.render({
+                    el: "#status",
+                    name: "status",
+                    filterable: true,
+                    initValue: initValue,
+                    data: [{"value":"1","name":"待受理"},{"value":"2","name":"已受理"},{"value":"3","name":"已取消"},{"value":"4","name":"已完成"}],
+                    model: {"icon":"hidden","label":{"type":"text"}},
+                    clickClose: true,
+                    radio: true,
+                })
+            });
             
             // 字段 创建时间 created_at
             layui.use(["laydate"], function() {
@@ -114,20 +160,53 @@
 						field: "id",
 						sort: true,
 					},{
-						title: "车辆名称",align: "center",
-						field: "name",
-					},{
-						title: "车辆图片",align: "center",
-						field: "image",
-					},{
-						title: "车辆颜色",align: "center",
-						field: "color",
-					},{
-						title: "所属仓库",align: "center",
-						field: "warehouse_id",
-                        templet: function(d) {
-                            return d.warehouse?d.warehouse.name:"";
+						title: "用户",align: "center",
+						field: "user_id",
+                        templet: function (d) {
+                            return d.user? d.user.nickname : "";
                         }
+					},{
+						title: "类型",align: "center",
+						field: "type",
+						templet: function (d) {
+							let field = "type";
+							if (typeof d[field] == "undefined") return "";
+							let items = [];
+							layui.each((d[field] + "").split(","), function (k , v) {
+								items.push(apiResults[field][v] || v);
+							});
+							return util.escape(items.join(","));
+						}
+					},{
+						title: "地址",align: "center",
+						field: "address_id",
+                        templet: function (d) {
+                            return d.address ? d.address.province + d.address.city + d.address.region + d.address.address : "";
+                        }
+					},{
+						title: "上门时间",align: "center",
+						field: "visit_time",
+					},{
+						title: "图片",align: "center",
+						field: "image",
+						templet: function (d) {
+							return '<img src="'+encodeURI(d['image'])+'" style="max-width:32px;max-height:32px;" alt="" />'
+						}
+					},{
+						title: "备注",align: "center",
+						field: "mark",
+					},{
+						title: "状态",align: "center",
+						field: "status",
+						templet: function (d) {
+							let field = "status";
+							if (typeof d[field] == "undefined") return "";
+							let items = [];
+							layui.each((d[field] + "").split(","), function (k , v) {
+								items.push(apiResults[field][v] || v);
+							});
+							return util.escape(items.join(","));
+						}
 					},{
 						title: "创建时间",align: "center",
 						field: "created_at",
@@ -164,7 +243,10 @@
 				    }
 				});
 				
-				
+				// 获取表格中下拉或树形组件数据
+				let apiResults = {};
+				apiResults["type"] = {"1":"水机维修","2":"水机清洗"};
+				apiResults["status"] = {"1":"待受理","2":"已受理","3":"已取消","4":"已完成"};
                 // 编辑或删除行事件
                 table.on("tool(data-table)", function(obj) {
                     if (obj.event === "remove") {

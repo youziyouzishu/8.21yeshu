@@ -79,9 +79,10 @@
         
         <script>
 
+            let warehouse_id = layui.url().search['warehouse_id'];
             // 相关常量
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/warehouse-sku/select";
+            const SELECT_API = "/admin/warehouse-sku/select?warehouse_id=" + warehouse_id;
             const UPDATE_API = "/admin/warehouse-sku/update";
             const DELETE_API = "/admin/warehouse-sku/delete";
             const INSERT_URL = "/admin/warehouse-sku/insert";

@@ -2,31 +2,19 @@
 
 namespace app\admin\model;
 
-
 use plugin\admin\app\model\Base;
-use support\Db;
-
 
 /**
- * 
- *
- * @property int $id 主键
- * @property int $user_id 用户
- * @property int $type 类型:1=水机维修,2=水机清洗
- * @property int $address_id 地址
+ * @property integer $id 主键(主键)
+ * @property integer $user_id 用户
+ * @property integer $type 类型:1=水机维修,2=水机清洗
+ * @property integer $address_id 地址
  * @property string $visit_time 上门时间
  * @property string $image 图片
  * @property string $mark 备注
- * @property int $status 状态:1=待受理,2=已受理,3=已取消,4=已完成
- * @property \Illuminate\Support\Carbon|null $created_at 创建时间
- * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService query()
- * @property-read mixed $status_text
- * @property-read \app\admin\model\UsersAddress|null $address
- * @property-read \app\admin\model\User|null $user
- * @mixin \Eloquent
+ * @property integer $status 状态:1=待受理,2=已受理,3=已取消,4=已完成
+ * @property string $created_at 创建时间
+ * @property string $updated_at 更新时间
  */
 class PrivacyService extends Base
 {
@@ -51,36 +39,21 @@ class PrivacyService extends Base
         'visit_time',
         'image',
         'mark',
+        'status',
+        'created_at',
+        'updated_at',
     ];
 
-    protected $appends = ['status_text'];
-
-    function getStatusTextAttribute($value)
-    {
-        $value = $value ?? $this->status;
-        $list = $this->getStatusList();
-        return $list[$value] ?? '';
-    }
-
-    function getStatusList()
-    {
-        return [
-            1 => '待受理',
-            2 => '已受理',
-            3 => '已取消',
-            4 => '已完成',
-        ];
-    }
-
-    function address()
-    {
-        return $this->belongsTo(UsersAddress::class, 'address_id', 'id');
-    }
-
-    function user()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-
+    public function address()
+    {
+        return $this->belongsTo(UsersAddress::class, 'address_id', 'id');
+    }
+    
+    
+    
 }

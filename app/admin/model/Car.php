@@ -28,6 +28,11 @@ class Car extends Base
      * @var string
      */
     protected $primaryKey = 'id';
+
+    function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');
+    }
     
     
     
