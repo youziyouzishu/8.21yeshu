@@ -28,7 +28,20 @@ class WarehouseTakeController extends Crud
     {
         $this->model = new WarehouseTake;
     }
-    
+
+    /**
+     * 查询
+     * @param Request $request
+     * @return Response
+     * @throws BusinessException
+     */
+    public function select(Request $request): Response
+    {
+        [$where, $format, $limit, $field, $order] = $this->selectInput($request);
+        $query = $this->doSelect($where, $field, $order)->with(['warehouse','operate']);
+        return $this->doFormat($query, $format, $limit);
+    }
+
     /**
      * 浏览
      * @return Response
@@ -64,6 +77,11 @@ class WarehouseTakeController extends Crud
     public function update(Request $request): Response
     {
         if ($request->method() === 'POST') {
+            if (empty($operate_id)) {
+                $request->setParams('post',[
+                    'operate_id' => admin_id(),
+                ]);
+            }
             return parent::update($request);
         }
         return view('warehouse-take/update');

@@ -5,7 +5,7 @@ namespace app\api\controller;
 use app\admin\model\User;
 use app\api\basic\Base;
 use Carbon\Carbon;
-use EasyWeChat\MiniApp\Application;
+use EasyWeChat\Factory;
 use support\Request;
 use Tinywan\Jwt\JwtToken;
 
@@ -36,10 +36,10 @@ class AccountController extends Base
             } else {
                 return $this->fail('客户端类型错误');
             }
-            $app = new Application($config);
-            $ret = $app->getUtils()->codeToSession($code);
-            $openid = $ret['openid'];
-            $unionid = '123456';
+            $app = Factory::miniProgram($config);
+            $ret = $app->auth->session($code);
+
+            $openid = 1;
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
         }
@@ -52,7 +52,6 @@ class AccountController extends Base
                 'join_time' => Carbon::now()->toDateTimeString(),
                 'join_ip' => $request->getRealIp(),
                 'openid' => $openid,
-                'unionid' => $unionid,
                 'client_type' => $client_type,
                 'work_status' => $client_type == 'user' ? 1 : 2,#用户端默认为启用
                 'status' => 1,

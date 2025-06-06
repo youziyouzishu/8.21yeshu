@@ -28,6 +28,19 @@ class WarehouseTakeLog extends Base
      * @var string
      */
     protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'take_id',
+        'goods_id',
+        'num',
+        'difference',
+    ];
+
+    function goods()
+    {
+        return $this->belongsTo(Goods::class, 'goods_id', 'id');
+    }
+
     
     
     

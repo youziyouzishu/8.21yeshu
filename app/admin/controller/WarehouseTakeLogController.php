@@ -19,6 +19,7 @@ class WarehouseTakeLogController extends Crud
      */
     protected $model = null;
 
+
     /**
      * 构造函数
      * @return void
@@ -26,6 +27,19 @@ class WarehouseTakeLogController extends Crud
     public function __construct()
     {
         $this->model = new WarehouseTakeLog;
+    }
+
+    /**
+     * 查询
+     * @param Request $request
+     * @return Response
+     * @throws BusinessException
+     */
+    public function select(Request $request): Response
+    {
+        [$where, $format, $limit, $field, $order] = $this->selectInput($request);
+        $query = $this->doSelect($where, $field, $order)->with(['goods']);
+        return $this->doFormat($query, $format, $limit);
     }
     
     /**

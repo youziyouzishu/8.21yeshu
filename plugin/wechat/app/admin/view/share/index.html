@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分享设置</title>
+    <link rel="stylesheet" href="/app/admin/component/layui/css/layui.css" />
+    <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/app/admin/admin/css/reset.css" />
+    <link rel="stylesheet" href="/app/wechat/css/prism.css" />
+    <style>
+        .layui-elem-field {
+            margin-bottom: 25px;
+        }
+        .layui-elem-field > .layui-field-box {
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+<body class="pear-container">
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" onsubmit="return false" lay-filter="chatShare">
+            <fieldset class="layui-elem-field">
+                <legend>基础设置</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">链接前缀 <span class="layui-font-red">*</span></label>
+                        <div class="layui-input-block">
+                            <input type="text" name="url" id="url" required lay-verify="required" placeholder="请输入分享链接的URL前缀（必填）" autocomplete="off" class="layui-input">
+                            <span class="layui-anim notselect layui-font-blue">
+                                必要参数, 请与微信公众平台设置的JS接口安全域名保持一致. Webman一般使用反代,无法获取到真实的URL, 请填写你的URL前缀, 如:https://domain.com, 结尾无须带斜杠
+                            </span>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">调试模式 <span class="layui-font-red">&nbsp;</span></label>
+                        <div class="layui-input-block">
+                            <select name="debug">
+                                <option value="0">关闭</option>
+                                <option value="1">开启</option>
+                            </select>
+                            <span class="layui-anim notselect layui-font-blue">
+                                默认关闭, 开启后页面会弹出调试信息
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="layui-elem-field">
+                <legend>微信 & QQ分享设置</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">图标URL <span class="layui-font-red">*</span></label>
+                        <div class="layui-input-block">
+                            <input type="url" name="message_img" placeholder="分享的图标的URL" required lay-verify="required" autocomplete="off" class="layui-input">
+                            <span class="layui-anim notselect layui-font-blue">
+                                需要完整的URL, 比如:https://domain.com/img/share.png, 官方没有提供图片格式的要求, 建议:尺寸300*300,大小不超过100KB, 使用JPG或PNG格式
+                            </span>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">默认标题 <span class="layui-font-red">&nbsp;</span></label>
+                        <div class="layui-input-block">
+                            <input type="text" name="message_title" placeholder="分享的默认标题" autocomplete="off" class="layui-input">
+                            <span class="layui-anim notselect layui-font-blue">
+                                会自动获取页面的Title标签内容, 获取失败或页面Title标签为空时, 会读取此处设置的默认标题
+                            </span>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">默认描述 <span class="layui-font-red">&nbsp;</span></label>
+                        <div class="layui-input-block">
+                            <input type="text" name="message_description" placeholder="分享的默认描述" autocomplete="off" class="layui-input">
+                            <span class="layui-anim notselect layui-font-blue">
+                                会自动获取页面的description的meta标签内容, 获取失败或页面description的meta标签为空时, 会读取此处设置的默认描述
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="layui-elem-field">
+                <legend>朋友圈 & QQ空间分享设置</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">图标URL <span class="layui-font-red">*</span></label>
+                        <div class="layui-input-block">
+                            <input type="url" name="timeline_img" placeholder="分享的图标的URL" required lay-verify="required" autocomplete="off" class="layui-input">
+                            <span class="layui-anim notselect layui-font-blue">
+                                需要完整的URL, 比如:https://domain.com/img/share.png, 官方没有提供图片格式的要求, 建议大小不超过100KB, 使用JPG或PNG格式
+                            </span>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">默认标题 <span class="layui-font-red">&nbsp;</span></label>
+                        <div class="layui-input-block">
+                            <input type="text" name="timeline_title" placeholder="分享的默认标题" autocomplete="off" class="layui-input">
+                            <span class="layui-anim notselect layui-font-blue">
+                                会自动获取页面的Title标签内容, 获取失败或页面Title标签为空时, 会读取此处设置的默认标题
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="layui-form-item">
+                <button class="pear-btn pear-btn-primary" lay-submit="" lay-filter="formWechatShare" style="width: 260px;margin-left: 130px">保存设置</button>
+            </div>
+        </form>
+    </div>
+    <div class="layui-collapse">
+        <div class="layui-colla-item">
+            <div class="layui-colla-title">点击展开用法介绍</div>
+            <div class="layui-colla-content">
+                <div class="layui-panel">
+                    <div style="padding: 32px;">
+                        <div style="color:red">请注意: 使用分享功能之前, 请务必先前往[参数配置]页面, 完成公众号的参数配置.</div>
+                        <div>
+                            1. 分享功能是基于微信JS-SDK实现的, 请确保你的公众号已经开通了JS-SDK权限, 并且已经设置了JS接口安全域名.
+                        </div>
+                        <div style="margin-bottom: 10px">
+                            2. 需要在页面中的JS代码中调用微信JS-SDK的分享接口, 但是无须担心, 本插件已经实现一键生成的功能, 按照以下方法操作即可.
+                        </div>
+                        <div>
+                            第一步, 控制器中在渲染模版之前, 调用WechatService的share_js函数生成分享JS代码, 示例代码如下:
+                            <pre class="line-numbers">
+<code class="language-php">
+&lt;?php
+namespace app\controller;
+
+use modules\wechat\library\WechatLib;
+
+class TestController
+{
+    public function index()
+    {
+        $js = WechatService::share_js();
+        return view('test/index', ['js' => $js]);
+    }
+}
+</code>
+                            </pre>
+                        </div>
+                        <div>
+                            第二步, 在模版文件的&lt;/body&gt;之前打印$js变量即可, 示例代码如下(根据模版引擎,任选一种写法即可):
+                            <pre class="line-numbers">
+<code class="language-javascript">
+&lt;html&gt;
+    &lt;title&gt;测试页面&lt;/title&gt;
+&lt;body&gt;
+    //省略其他HTML代码
+
+    //原生PHP写法
+    &lt;?php echo $js; ?&gt;
+
+    //ThinkTemplate模版引擎写法
+    {$js}
+
+    //Laravel Blade模版引擎写法
+    {!! $js !!}
+
+    //Smarty模版引擎写法
+    {$js}
+&lt;/body>
+&lt;/html&gt;
+</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/app/admin/component/layui/layui.js"></script>
+<script src="/app/admin/component/pear/pear.js"></script>
+<script src="/app/wechat/js/prism.js"></script>
+<script>
+
+    layui.$("#url").val('https://' + window.location.host);
+
+    layui.use(["form", "popup"], function () {
+        layui.$.ajax({
+            url: '/app/wechat/admin/share/get',
+            type: "GET",
+            dateType: "json",
+            success: function (res) {
+                if (res.code) {
+                    return layui.popup.failure(res.msg);
+                }
+                layui.form.val("chatShare", res.data);
+                //重新渲染表单
+                layui.form.render();
+            }
+        });
+
+        layui.form.on("submit(formWechatShare)", function (data) {
+            layui.$.ajax({
+                url: '/app/wechat/admin/share/save',
+                type: "POST",
+                dateType: "json",
+                data: data.field,
+                success: function (res) {
+                    if (res.code) {
+                        return layui.popup.failure(res.msg);
+                    }
+                    return layui.popup.success("操作成功", function () {
+                        parent.refreshTable();
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</body>
+</html>

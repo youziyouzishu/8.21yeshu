@@ -79,9 +79,10 @@
         
         <script>
 
+            let take_id = layui.url().search['take_id'];
             // 相关常量
             const PRIMARY_KEY = "id";
-            const SELECT_API = "/admin/warehouse-take-log/select";
+            const SELECT_API = "/admin/warehouse-take-log/select?take_id="+take_id;
             const UPDATE_API = "/admin/warehouse-take-log/update";
             const DELETE_API = "/admin/warehouse-take-log/delete";
             const INSERT_URL = "/admin/warehouse-take-log/insert";
@@ -114,11 +115,11 @@
 						field: "id",
 						sort: true,
 					},{
-						title: "盘点",align: "center",
-						field: "take_id",
-					},{
 						title: "商品",align: "center",
 						field: "goods_id",
+                        templet: function (d) {
+                            return d.goods? d.goods.name : "";
+                        }
 					},{
 						title: "数量",align: "center",
 						field: "num",

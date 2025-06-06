@@ -2,6 +2,7 @@
 
 namespace app\admin\model;
 
+use plugin\admin\app\model\Admin;
 use plugin\admin\app\model\Base;
 
 /**
@@ -42,6 +43,16 @@ class WarehouseTake extends Base
     function log()
     {
         return $this->hasMany(WarehouseTakeLog::class, 'take_id', 'id');
+    }
+
+    function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');
+    }
+
+    function operate()
+    {
+        return $this->belongsTo(Admin::class, 'operate_id', 'id');
     }
     
     
