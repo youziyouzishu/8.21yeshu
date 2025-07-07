@@ -8,7 +8,6 @@ use app\api\basic\Base;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
-use EasyWeChat\MiniApp\Application;
 use support\Db;
 use support\Request;
 use Yansongda\Pay\Pay;

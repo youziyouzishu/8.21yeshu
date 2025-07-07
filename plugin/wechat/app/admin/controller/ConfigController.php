@@ -7,11 +7,20 @@ use support\Response;
 
 class ConfigController
 {
+    /**
+     * 浏览
+     * @return Response
+     * @throws Throwable
+     */
     public function index(): Response
     {
         return raw_view('config/index');
     }
 
+    /**
+     * 获取配置
+     * @return Response
+     */
     public function get(): Response
     {
         $config = Option::where('name', 'wechat_config')->value('value');

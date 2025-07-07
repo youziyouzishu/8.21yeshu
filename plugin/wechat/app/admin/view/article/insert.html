@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="UTF-8">
+        <title>新增页面</title>
+        <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css" />
+        <link rel="stylesheet" href="/app/admin/admin/css/reset.css" />
+    </head>
+    <body>
+    <style>
+        .layui-input-block input {
+            width: 300px;
+        }
+    </style>
+
+        <form class="layui-form" action="">
+
+            <div class="mainBox">
+                <div class="main-container mr-5">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" value="" required lay-verify="required" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">封面图</label>
+                        <div class="layui-input-block">
+                            <img class="img-3" src=""/>
+                            <input type="text" style="display:none" name="thumb_media_id" value="" />
+                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="thumb_media_id" >
+                                <i class="layui-icon layui-icon-upload"></i>上传图片
+                            </button>
+                            <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="attachment-choose-thumb_media_id">
+                                <i class="layui-icon layui-icon-align-left"></i>选择图片
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-block">
+                            <textarea id="content" style="height: 300px" name="content" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="pear-btn pear-btn-primary pear-btn-md" lay-submit="" lay-filter="save">
+                                提交
+                            </button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+
+
+        </form>
+
+        <script src="/app/admin/component/layui/layui.js?v=2.8.12"></script>
+        <script src="/app/admin/component/pear/pear.js"></script>
+        <script src="/app/admin/admin/js/permission.js"></script>
+        <script>
+
+            // 相关接口
+            const INSERT_API = "/app/wechat/admin/article/insert";
+
+            // 字段 内容 content
+            layui.use(["tinymce"], function() {
+                var tinymce = layui.tinymce
+                var edit = tinymce.render({
+                    elem: "#content",
+                    width:"500",
+                    images_upload_url: "/app/admin/upload/image",
+                });
+                edit.on("blur", function(){
+                    layui.$("#content").val(edit.getContent());
+                });
+            });
+
+            // 字段 图片 image
+            layui.use(["upload", "layer"], function() {
+                let input = layui.$("#thumb_media_id").prev();
+                input.prev().attr("src", input.val());
+                layui.$("#attachment-choose-thumb_media_id").on("click", function() {
+                    parent.layer.open({
+                        type: 2,
+                        title: "选择附件",
+                        content: "/app/admin/upload/attachment?ext=jpg,jpeg,png,gif,bmp",
+                        area: ["95%", "90%"],
+                        success: function (layero, index) {
+                            parent.layui.$("#layui-layer" + index).data("callback", function (data) {
+                                input.val(data.url).prev().attr("src", data.url);
+                            });
+                        }
+                    });
+                });
+                layui.upload.render({
+                    elem: "#thumb_media_id",
+                    value: "",
+                    acceptMime: "image/gif,image/jpeg,image/jpg,image/png",
+                    url: "/app/admin/upload/image",
+                    multiple: 0,
+                    field: "__file__",
+                    done: function (res) {
+                        if (res.code > 0) return layui.layer.msg(res.msg);
+                        this.item.prev().val(res.data.url).prev().attr("src", res.data.url);
+                    }
+                });
+            });
+            
+            //提交事件
+            layui.use(["form", "popup"], function () {
+                layui.form.on("submit(save)", function (data) {
+                    layui.$.ajax({
+                        url: INSERT_API,
+                        type: "POST",
+                        dateType: "json",
+                        data: data.field,
+                        success: function (res) {
+                            if (res.code) {
+                                return layui.popup.failure(res.msg);
+                            }
+                            return layui.popup.success("操作成功");
+                        }
+                    });
+                    return false;
+                });
+            });
+
+        </script>
+
+    </body>
+</html>

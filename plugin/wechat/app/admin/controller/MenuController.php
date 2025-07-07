@@ -7,11 +7,20 @@ use support\Response;
 
 class MenuController
 {
+    /**
+     * 浏览
+     * @return Response
+     * @throws Throwable
+     */
     public function index(): Response
     {
         return raw_view('menu/index');
     }
 
+    /**
+     * 加载菜单
+     * @return Response
+     */
     public function load(): Response
     {
         $res = WechatService::instance()->menu->current();

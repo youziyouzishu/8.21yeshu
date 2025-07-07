@@ -110,7 +110,7 @@ class User extends Base
                 $after = function_exists('bcadd') ? bcadd($user->money, $money, 2) : $user->money + $money;
                 //更新会员信息
                 $user->money = $after;
-                $user->save();
+                $user->save();CoserReport::where('coser_id',$request->user_id)
                 //写入日志
                 UsersMoneyLog::create(['user_id' => $user_id, 'money' => $money, 'before' => $before, 'after' => $after, 'memo' => $memo]);
             }

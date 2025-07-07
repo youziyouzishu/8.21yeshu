@@ -38,8 +38,7 @@ class AccountController extends Base
             }
             $app = Factory::miniProgram($config);
             $ret = $app->auth->session($code);
-
-            $openid = 1;
+            $openid = $ret->openid;
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
         }

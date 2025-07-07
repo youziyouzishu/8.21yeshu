@@ -7,11 +7,20 @@ use support\Response;
 
 class ShareController
 {
+    /**
+     * 浏览
+     * @return Response
+     * @throws Throwable
+     */
     public function index(): Response
     {
         return raw_view('share/index');
     }
 
+    /**
+     * 获取配置
+     * @return Response
+     */
     public function get(): Response
     {
         $share_config = Option::where('name', 'wechat_share')->value('value');

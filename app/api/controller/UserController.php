@@ -8,6 +8,7 @@ use app\admin\model\User;
 use app\admin\model\UsersCollect;
 use app\admin\model\Warehouse;
 use app\api\basic\Base;
+use EasyWeChat\Factory;
 use support\Log;
 use support\Request;
 use support\Response;
@@ -73,15 +74,8 @@ class UserController extends Base
             return $this->fail('客户端类型错误');
         }
         try {
-            $app = new \EasyWeChat\MiniApp\Application($config);
-            $api = $app->getClient();
-            $ret = $api->postJson('/wxa/business/getuserphonenumber', [
-                'code' => $code
-            ]);
-            $ret = json_decode($ret);
-            if ($ret->errcode != 0) {
-                throw new \Exception($ret->errmsg);
-            }
+            $app = Factory::miniProgram($config);
+            $ret = $app->phone_number->getUserPhoneNumber($code);
             $mobile = $ret->phone_info->phoneNumber;
             $user = User::find($request->user_id);
             $user->mobile = $mobile;

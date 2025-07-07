@@ -7,11 +7,20 @@ use support\Response;
 
 class ReplyController
 {
+    /**
+     * 浏览
+     * @return Response
+     * @throws Throwable
+     */
     public function index(): Response
     {
         return view('reply/index');
     }
 
+    /**
+     * 获取配置
+     * @return Response
+     */
     public function get(): Response
     {
         $reply = Option::where('name', 'wechat_reply')->value('value');
