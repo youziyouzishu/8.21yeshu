@@ -164,8 +164,7 @@ class DriverController extends Base
         if (!in_array($order->status, [1,2, 4, 5])) {
             return $this->fail('订单状态错误');
         }
-        $order->status = 0;#更改订单状态
-        $order->user_id = null;#重置司机id
+        $order->status = 3;#更改订单状态
         $order->cancel_reason = $cancel_reason;
         $order->cancel_explain = $cancel_explain;
         $order->cancel_images = $cancel_images;

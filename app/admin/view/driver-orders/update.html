@@ -14,42 +14,7 @@
 
             <div class="mainBox">
                 <div class="main-container mr-5">
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">用户</label>
-                        <div class="layui-input-block">
-                            <input type="number" name="user_id" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">发货仓库</label>
-                        <div class="layui-input-block">
-                            <input type="number" name="from_warehouse_id" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">目的地</label>
-                        <div class="layui-input-block">
-                            <input type="number" name="to_warehouse_id" value="" required lay-verify="required" class="layui-input">
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label required">类型</label>
-                        <div class="layui-input-block">
-                            <div name="freight_type" id="freight_type" required value="" ></div>
-                        </div>
-                    </div>
-                    
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">运费</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="freight" value="" class="layui-input">
-                        </div>
-                    </div>
-                    
+
                     <div class="layui-form-item">
                         <label class="layui-form-label">状态</label>
                         <div class="layui-input-block">
@@ -108,41 +73,44 @@
                                 obj[0].value = value;
                             }
                         });
-                        
-                        // 字段 类型:1=线上结算,2=线下结算 freight_type
-                        layui.use(["jquery", "xmSelect"], function() {
-                            let value = layui.$("#freight_type").attr("value");
-                            let initValue = value ? value.split(",") : [];
-                            layui.xmSelect.render({
-                                el: "#freight_type",
-                                name: "freight_type",
-                                filterable: true,
-                                initValue: initValue,
-                                data: [{"value":"1","name":"线上结算"},{"value":"2","name":"线下结算"}],
-                                model: {"icon":"hidden","label":{"type":"text"}},
-                                clickClose: true,
-                                radio: true,
-                                layVerify: "required",
-                            })
-                        });
-                        
+
+
                         // 字段 状态:0=待分配,1=待接受,2=待取货,3=取消,4=配送中,5=完成 status
                         layui.use(["jquery", "xmSelect"], function() {
                             let value = layui.$("#status").attr("value");
                             let initValue = value ? value.split(",") : [];
+                            let data = [{"value":"0","name":"待分配"},{"value":"1","name":"待接受"},{"value":"2","name":"待取货"},{"value":"3","name":"取消"},{"value":"4","name":"配送中"},{"value":"5","name":"完成"}];
+                            if (value === "0"){
+                                data = [{"value":"0","name":"待分配"}]
+                            }
+                            if (value === "1"){
+                                data = [{"value":"1","name":"待接受"}]
+                            }
+                            if (value === "2"){
+                                data = [{"value":"2","name":"待取货"}]
+                            }
+                            if (value === "3"){
+                                data = [{"value":"3","name":"取消"}]
+                            }
+                            if (value === "4"){
+                                data = [{"value":"4","name":"配送中"}]
+                            }
+                            if (value === "5"){
+                                data = [{"value":"5","name":"完成"}]
+                            }
                             layui.xmSelect.render({
                                 el: "#status",
                                 name: "status",
                                 filterable: true,
                                 initValue: initValue,
-                                data: [{"value":"0","name":"待分配"},{"value":"1","name":"待接受"},{"value":"2","name":"待取货"},{"value":"3","name":"取消"},{"value":"4","name":"配送中"},{"value":"5","name":"完成"}],
+                                data: data,
                                 model: {"icon":"hidden","label":{"type":"text"}},
                                 clickClose: true,
                                 radio: true,
                             })
                         });
-                        
-                        
+
+
                         // ajax返回失败
                         if (res.code) {
                             layui.popup.failure(res.msg);

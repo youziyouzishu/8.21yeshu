@@ -135,6 +135,27 @@
 						title: "详细地址",align: "left",
 						field: "address",
 					},{
+                        title: "图片",align: "center",
+                        field: "image",
+                        templet: function (d) {
+                            return '<img src="'+encodeURI(d['image'])+'" style="max-width:32px;max-height:32px;" alt="" />'
+                        }
+                    },{
+                        title: "轮播图",align: "center",
+                        field: "images",
+                        templet: function (d) {
+                            let html = '';
+                            if(d['images']){
+                                const images = d['images'].split(',');
+
+                                for (let img of images) {
+                                    html += '<img src="' + encodeURI(img.trim()) + '" style="max-width:32px;max-height:32px;" alt="" />';
+                                }
+                            }
+
+                            return html;
+                        }
+                    },{
 						title: "经度",align: "left",
 						field: "lng",
 					},{
