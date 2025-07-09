@@ -90,6 +90,10 @@ class User extends Base
         'openid',
         'client_type',
         'unionid',
+        'work_status',
+        'warehouse_id',
+        'lat',
+        'lng',
     ];
 
 

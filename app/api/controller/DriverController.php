@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\admin\model\Area;
 use app\admin\model\DriverOrders;
+use app\admin\model\User;
 use app\admin\model\WarehouseSku;
 use app\admin\model\WarehouseSkuLog;
 use app\api\basic\Base;
@@ -160,7 +161,7 @@ class DriverController extends Base
         if (!$order) {
             return $this->fail('订单不存在');
         }
-        if (!in_array($order->status, [3, 4, 5])) {
+        if (!in_array($order->status, [1,2, 4, 5])) {
             return $this->fail('订单状态错误');
         }
         $order->status = 0;#更改订单状态
@@ -231,6 +232,9 @@ class DriverController extends Base
         $order->total_time = $total_time;
         $order->save();
 
+        if ($order->freight_type == 1){
+            User::money($order->freight, $order->user_id, '配送完成');
+        }
 
         $skus = $order->sku()->get();
         $skus->each(function ($item) use($order) {

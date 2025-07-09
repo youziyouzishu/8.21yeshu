@@ -24,9 +24,9 @@ class WithdrawController extends Base
         if (!$amount) {
             return $this->fail('请输入提现金额');
         }
-        if ($amount < 100) {
-            return $this->fail('提现金额不能小于100');
-        }
+//        if ($amount < 100) {
+//            return $this->fail('提现金额不能小于100');
+//        }
         $user = User::find($request->user_id);
         if ($user->money < $amount) {
             return $this->fail('余额不足');
@@ -38,7 +38,7 @@ class WithdrawController extends Base
                 'withdraw_amount' => $amount,
                 'into_amount' => $amount,
                 'type' => $type,
-                'bankcard_id' => $bankcard_id ?? null,
+                'bankcard_id' => !empty($bankcard_id) ?$bankcard_id: null,
             ]);
         } catch (\Throwable $e) {
             Log::error('提现失败');

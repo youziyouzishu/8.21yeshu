@@ -12,6 +12,7 @@ use EasyWeChat\Factory;
 use support\Log;
 use support\Request;
 use support\Response;
+use Tinywan\Jwt\Exception\JwtRefreshTokenExpiredException;
 use Tinywan\Jwt\JwtToken;
 
 class UserController extends Base
@@ -30,7 +31,7 @@ class UserController extends Base
         }
         $row = User::find($request->user_id);
         if (!$row) {
-            return $this->fail('用户不存在');
+            throw new JwtRefreshTokenExpiredException();
         }
         return $this->success('成功', $row);
     }
@@ -163,6 +164,9 @@ class UserController extends Base
     {
         $status = $request->post('status'); #工作状态:0=否,1=是
         $user = User::find($request->user_id);
+        if ($user->work_status == 3) {
+            return $this->fail('请联系管理员开启账户');
+        }
         $user->work_status = $status;
         $user->save();
         return $this->success();
