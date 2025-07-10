@@ -158,11 +158,16 @@ GoodsController extends Base
             $freight = DeliveryConfig::where('start', '<=', $distance)->where('end', '>=', $distance)->first()->price;
             $shopcars = Shopcar::where(['user_id' => $request->user_id])->whereIn('id', $shopcar_ids)->get();
             $total_goods_amount = 0;
+            $total_deposit = 0;
             $coupon_amount = 0;
             $goods = [];
             foreach ($shopcars as $shopcar) {
                 $goods_amount = $shopcar->goods->price * $shopcar->num;
+                $deposit = $shopcar->goods->deposit;
                 $total_goods_amount += $goods_amount;
+                if ($shopcar->goods->type == 2){
+                    $total_deposit += $deposit;
+                }
                 $shopcar->setAttribute('goods_amount', $goods_amount);
                 $goodsType = $shopcar->goods->type_text;
                 if (!isset($goods[$goodsType])) {
@@ -172,7 +177,7 @@ GoodsController extends Base
             }
 
             $goods = array_values($goods);
-            $pay_amount = $total_goods_amount + $freight;
+            $pay_amount = $total_goods_amount + $freight + $total_deposit;
             $coupons = UsersCoupon::where(['user_id' => $request->user_id, 'status' => 1])
                 ->where(function ($query) use ($pay_amount) {
                     $query->where('type', 1)->orWhere(function ($query) use ($pay_amount) {
@@ -198,6 +203,7 @@ GoodsController extends Base
                 'coupons' => $coupons,
                 'coupon_amount' => $coupon_amount,
                 'pay_amount' => $pay_amount,
+                'total_deposit' => $total_deposit,
             ]);
         } else {
             return $this->fail('超出最大配送范围');
@@ -255,19 +261,26 @@ GoodsController extends Base
                 $shopcars = Shopcar::where(['user_id' => $request->user_id])->whereIn('id', $shopcar_ids)->get();
                 $total_goods_amount = 0;
                 $coupon_amount = 0;
+                $total_deposit = 0;
                 $sub_data = [];
                 foreach ($shopcars as $shopcar) {
+                    $deposit = 0;
                     $goods_amount = $shopcar->goods->price * $shopcar->num;
                     $total_goods_amount += $goods_amount;
+                    if ($shopcar->goods->type == 2){
+                        $deposit = $shopcar->goods->deposit;
+                        $total_deposit += $deposit;
+                    }
                     $sub_data[] = [
                         'goods_id' => $shopcar->goods_id,
                         'num' => $shopcar->num,
                         'amount' => $shopcar->goods->price,
                         'total_amount' => $goods_amount,
+                        'deposit' => $deposit,
                     ];
                     $shopcar->delete();
                 }
-                $pay_amount = $total_goods_amount + $freight;
+                $pay_amount = $total_goods_amount + $freight + $total_deposit;
                 $coupon = UsersCoupon::where(['user_id' => $request->user_id, 'status' => 1])
                     ->where(function ($query) use ($pay_amount) {
                         $query->where('type', 1)->orWhere(function ($query) use ($pay_amount) {
@@ -291,6 +304,7 @@ GoodsController extends Base
                     'pay_amount' => $pay_amount,
                     'coupon_amount' => $coupon_amount,
                     'goods_amount' => $total_goods_amount,
+                    'total_deposit' => $total_deposit,
                     'freight' => $freight,
                     'distance' => $distance,
                     'mark' => $mark,

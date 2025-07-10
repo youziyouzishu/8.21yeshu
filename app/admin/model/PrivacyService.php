@@ -5,6 +5,8 @@ namespace app\admin\model;
 use plugin\admin\app\model\Base;
 
 /**
+ * 
+ *
  * @property integer $id 主键(主键)
  * @property integer $user_id 用户
  * @property integer $type 类型:1=水机维修,2=水机清洗
@@ -15,6 +17,12 @@ use plugin\admin\app\model\Base;
  * @property integer $status 状态:1=待受理,2=已受理,3=已取消,4=已完成
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * @property-read \app\admin\model\UsersAddress|null $address
+ * @property-read \app\admin\model\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyService query()
+ * @mixin \Eloquent
  */
 class PrivacyService extends Base
 {

@@ -24,6 +24,10 @@ use plugin\admin\app\model\Base;
  * @property string|null $deleted_at 删除时间
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\User> $user
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\WarehouseSku> $sku
+ * @property string $duty 负责人
+ * @property string $image 图片
+ * @property string $images 轮播图
+ * @property string|null $content 详细介绍
  * @mixin \Eloquent
  */
 class Warehouse extends Base

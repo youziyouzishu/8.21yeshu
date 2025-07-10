@@ -24,6 +24,7 @@ use support\Db;
  * @property-read \app\admin\model\Goods|null $goods
  * @property-read \app\admin\model\GoodsOrders|null $orders
  * @property-read \app\admin\model\GoodsOrdersAssess|null $assess
+ * @property string $deposit 押金
  * @mixin \Eloquent
  */
 class GoodsOrdersSubs extends Base
@@ -48,6 +49,7 @@ class GoodsOrdersSubs extends Base
         'num',
         'amount',
         'total_amount',
+        'deposit',
     ];
 
     function goods()

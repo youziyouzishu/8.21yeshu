@@ -10,6 +10,9 @@ use support\Request;
 
 class WarehouseController extends Base
 {
+    /**
+     * 获取所有仓库信息
+     */
     function select(Request $request)
     {
         $lat = $request->lat;
@@ -18,7 +21,9 @@ class WarehouseController extends Base
         // 计算每个站点与给定经纬度的距离，并按距离排序
         $stations = $stations->each(function ($station) use ($lat, $lng) {
             $station->distance =  Area::getDistanceFromLngLat($lng, $lat, $station->lng, $station->lat);
-        })->sortBy('distance');
+        });
+            // 按距离由近到远排序
+        $stations = $stations->sortBy('distance')->values();
         return $this->success('成功', $stations);
     }
 

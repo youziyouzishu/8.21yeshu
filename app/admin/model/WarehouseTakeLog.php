@@ -5,6 +5,8 @@ namespace app\admin\model;
 use plugin\admin\app\model\Base;
 
 /**
+ * 
+ *
  * @property integer $id 主键(主键)
  * @property integer $take_id 盘点
  * @property integer $goods_id 商品
@@ -12,6 +14,11 @@ use plugin\admin\app\model\Base;
  * @property integer $difference 差值
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * @property-read \app\admin\model\Goods|null $goods
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WarehouseTakeLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WarehouseTakeLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WarehouseTakeLog query()
+ * @mixin \Eloquent
  */
 class WarehouseTakeLog extends Base
 {

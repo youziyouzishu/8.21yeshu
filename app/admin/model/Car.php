@@ -5,6 +5,8 @@ namespace app\admin\model;
 use plugin\admin\app\model\Base;
 
 /**
+ * 
+ *
  * @property integer $id 主键(主键)
  * @property string $name 车辆名称
  * @property string $image 车辆图片
@@ -12,6 +14,11 @@ use plugin\admin\app\model\Base;
  * @property integer $warehouse_id 所属仓库
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * @property-read \app\admin\model\Warehouse|null $warehouse
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Car newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Car newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Car query()
+ * @mixin \Eloquent
  */
 class Car extends Base
 {

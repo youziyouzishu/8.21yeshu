@@ -27,6 +27,8 @@ use support\Db;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrdersAssess newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrdersAssess newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GoodsOrdersAssess query()
+ * @property int $user_id 用户
+ * @property-read \app\admin\model\User|null $user
  * @mixin \Eloquent
  */
 class GoodsOrdersAssess extends Base

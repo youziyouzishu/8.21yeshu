@@ -63,6 +63,7 @@ use support\Db;
  * @property int $timeout_status 超时状态:0=无,1=未超时,2=超时
  * @property-read mixed $timeout_status_text
  * @property string|null $total_time 总配送时长(分钟)
+ * @property string $total_deposit 总押金
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
@@ -112,7 +113,8 @@ class GoodsOrders extends Base
         'invoice_id',
         'pay_type',
         'pay_time',
-        'settle_status'
+        'settle_status',
+        'total_deposit',
     ];
 
     protected $appends = [

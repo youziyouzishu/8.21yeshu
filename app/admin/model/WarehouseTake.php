@@ -6,6 +6,8 @@ use plugin\admin\app\model\Admin;
 use plugin\admin\app\model\Base;
 
 /**
+ * 
+ *
  * @property integer $id 主键(主键)
  * @property integer $operate_id 操作者
  * @property integer $warehouse_id 仓库
@@ -13,6 +15,13 @@ use plugin\admin\app\model\Base;
  * @property string $mark 备注
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \app\admin\model\WarehouseTakeLog> $log
+ * @property-read Admin|null $operate
+ * @property-read \app\admin\model\Warehouse|null $warehouse
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WarehouseTake newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WarehouseTake newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WarehouseTake query()
+ * @mixin \Eloquent
  */
 class WarehouseTake extends Base
 {

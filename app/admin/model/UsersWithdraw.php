@@ -10,7 +10,7 @@ use support\Db;
 
 
 /**
- *
+ * 
  *
  * @property int $id 主键
  * @property int $user_id 用户
@@ -33,6 +33,7 @@ use support\Db;
  * @property-read mixed $status_text
  * @property-read \app\admin\model\User|null $user
  * @property \Illuminate\Support\Carbon|null $deleted_at 删除时间
+ * @property-read \app\admin\model\UsersBankcard|null $bankcard
  * @mixin \Eloquent
  */
 class UsersWithdraw extends Base
