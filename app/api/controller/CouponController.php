@@ -36,7 +36,7 @@ class CouponController extends Base
         $id = $request->post('id');
         $coupon = Coupon::find($id);
         if (UsersCoupon::where(['user_id' => $request->user_id, 'coupon_id' => $id])->exists()) {
-            return $this->fail('已领取');
+            return $this->fail('不能重复领取');
         } else {
             $expired_at = Carbon::now()->addDays($coupon->expired_day);
             $user_coupon = UsersCoupon::create([

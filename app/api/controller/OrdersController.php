@@ -3,6 +3,7 @@
 namespace app\api\controller;
 
 use app\admin\model\GoodsOrders;
+use app\admin\model\GoodsOrdersAssess;
 use app\admin\model\GoodsOrdersSubs;
 use app\admin\model\User;
 use app\api\basic\Base;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use support\Db;
 use support\Log;
 use support\Request;
+use Webman\RedisQueue\Client;
 
 
 class OrdersController extends Base
@@ -169,6 +171,7 @@ class OrdersController extends Base
         $order->total_time = $total_time;
         $order->save();
         User::money($order->freight, $order->transport_id, '配送完成');
+        Client::send('job', ['event' => 'order_assess', 'id' => $order->id], 60 * 60 * 24 * 3);
         return $this->success();
     }
 
@@ -206,10 +209,49 @@ class OrdersController extends Base
                 'transport_content' => $transport_content,
                 'satisfied' => $satisfied,
             ]);
+            $assess_rate = GoodsOrdersAssess::where('goods_id',$item->goods_id)->avg('goods_score');
+            $item->goods()->update([
+                'assess_rate' => $assess_rate,
+            ]);
         });
         $order->status = 9;
         $order->save();
         return $this->success();
+    }
+
+
+    /**
+     * 押金列表
+     * @param Request $request
+     * @return \support\Response
+     */
+    function getDepositList(Request $request)
+    {
+        $orders = GoodsOrders::with(['subs'])
+            ->where('user_id',$request->user_id)
+            ->where('status',9)
+            ->where('total_deposit','>',0)
+            ->paginate()
+            ->items();
+        return $this->success('成功',$orders);
+    }
+
+
+    function refundDeposit(Request $request)
+    {
+        $id = $request->input('id');
+        $address_id = $request->input('address_id');
+        $order = GoodsOrders::find($id);
+        if(!$order){
+            return $this->fail('订单不存在');
+        }
+        if($order->status != 9){
+            return $this->fail('订单状态错误');
+        }
+        $order->status = 10;
+        $order->deposit_address_id = $address_id;
+        $order->save();
+        return $this->success('操作成功');
     }
 
 

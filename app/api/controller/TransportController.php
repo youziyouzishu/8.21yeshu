@@ -15,6 +15,7 @@ use plugin\admin\app\model\Option;
 use support\Db;
 use support\Request;
 use support\Response;
+use Webman\RedisQueue\Client;
 
 /**
  * 配送端
@@ -276,6 +277,7 @@ class TransportController extends Base
         $order->total_time = $total_time;
         $order->save();
         User::money($order->freight, $order->transport_id, '配送完成');
+        Client::send('job', ['event' => 'order_assess', 'id' => $order->id], 60 * 60 * 24 * 3);
         return $this->success();
     }
 

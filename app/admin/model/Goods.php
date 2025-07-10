@@ -27,6 +27,7 @@ use plugin\admin\app\model\Base;
  * @property-read mixed $type_text
  * @property int $category_id 分类
  * @property-read \app\admin\model\Category|null $category
+ * @property float $assess_rate 好评率
  * @mixin \Eloquent
  */
 class Goods extends Base

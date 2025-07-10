@@ -4,6 +4,8 @@ namespace app\queue\redis;
 
 use app\admin\model\Area;
 use app\admin\model\GoodsOrders;
+use app\admin\model\GoodsOrdersAssess;
+use app\admin\model\GoodsOrdersSubs;
 use app\admin\model\UsersCoupon;
 use Webman\RedisQueue\Client;
 use Webman\RedisQueue\Consumer;
@@ -27,6 +29,39 @@ class Job implements Consumer
             if ($user_coupon->status == 1) {
                 $user_coupon->status = 3;
                 $user_coupon->save();
+            }
+        }
+
+        if ($event == 'order_assess') {
+            $id = $data['id'];
+            $order = GoodsOrders::find($id);
+            if ($order->status == 7) {
+                $order->status = 9;
+                $order->save();
+                $goods_score = 5.0;
+                $goods_content = '默认好评!';
+                $image = null;
+                $transport_score = 5.0;
+                $transport_content  = '默认好评!';
+                $satisfied = 1;
+                $order->subs->each(function (GoodsOrdersSubs $item) use ($goods_score, $goods_content, $image, $transport_score, $transport_content, $satisfied){
+                    $item->assess()->create([
+                        'order_id' => $item->order_id,
+                        'user_id' => $item->orders->user_id,
+                        'goods_id' => $item->goods_id,
+                        'goods_score' => $goods_score,
+                        'goods_content' => $goods_content,
+                        'image' => $image,
+                        'transport_id' => $item->orders->transport_id,
+                        'transport_score' => $transport_score,
+                        'transport_content' => $transport_content,
+                        'satisfied' => $satisfied,
+                    ]);
+                    $assess_rate = GoodsOrdersAssess::where('goods_id',$item->goods_id)->avg('goods_score');
+                    $item->goods()->update([
+                        'assess_rate' => $assess_rate,
+                    ]);
+                });
             }
         }
 

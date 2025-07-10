@@ -64,6 +64,7 @@ use support\Db;
  * @property-read mixed $timeout_status_text
  * @property string|null $total_time 总配送时长(分钟)
  * @property string $total_deposit 总押金
+ * @property int|null $deposit_address_id 退押金地址
  * @mixin \Eloquent
  */
 class GoodsOrders extends Base
