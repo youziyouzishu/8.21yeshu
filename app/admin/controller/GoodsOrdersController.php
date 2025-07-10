@@ -38,7 +38,7 @@ class GoodsOrdersController extends Crud
     public function select(Request $request): Response
     {
         [$where, $format, $limit, $field, $order] = $this->selectInput($request);
-        $query = $this->doSelect($where, $field, $order)->with(['user','address','warehouse','invoice','transport']);
+        $query = $this->doSelect($where, $field, $order)->with(['user','address','warehouse','invoice','transport','depositAddress']);
         return $this->doFormat($query, $format, $limit);
     }
 

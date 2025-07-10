@@ -247,6 +247,11 @@ class GoodsOrders extends Base
         return $this->belongsTo(UsersAddress::class, 'address_id', 'id');
     }
 
+    function depositAddress()
+    {
+        return $this->belongsTo(UsersAddress::class, 'deposit_address_id', 'id');
+    }
+
     function warehouse()
     {
         return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');

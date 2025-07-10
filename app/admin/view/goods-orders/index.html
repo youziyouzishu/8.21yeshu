@@ -255,6 +255,12 @@
 							return d.address ? d.address.province + d.address.city + d.address.region + d.address.address : "";
 						}
 					},{
+                        title: "退押地址",align: "center",
+                        field: "deposit_address_id",
+                        templet: function (d) {
+                            return d.deposit_address ? d.deposit_address.province + d.deposit_address.city + d.deposit_address.region + d.deposit_address.address : "";
+                        }
+                    },{
 						title: "仓库",align: "center",
 						field: "warehouse_id",
                         templet: function (d) {
@@ -375,7 +381,7 @@
 				// 获取表格中下拉或树形组件数据
 				let apiResults = {};
 				apiResults["delivery_type"] = {"1":"立即配送","2":"预约配送"};
-				apiResults["status"] = ["待支付","待商家接单","取消","待骑手接单","待骑手取货","待骑手取货","配送中","配送完成","退款成功","订单完成"];
+				apiResults["status"] = ["待支付","待商家接单","取消","待骑手接单","待骑手取货","待骑手取货","配送中","配送完成","退款成功","订单完成","退押金"];
 				apiResults["pay_type"] = ["无","微信","余额"];
                 // 编辑或删除行事件
                 table.on("tool(data-table)", function(obj) {
