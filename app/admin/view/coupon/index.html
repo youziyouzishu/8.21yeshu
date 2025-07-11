@@ -78,6 +78,9 @@
             <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove" permission="admin.coupon.delete">
                 <i class="layui-icon layui-icon-delete"></i>删除
             </button>
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="give" permission="admin.coupon.give">
+                <i class="layui-icon layui-icon-add-1"></i>发放优惠券
+            </button>
         </script>
 
         <!-- 表格行工具栏 -->
@@ -255,6 +258,8 @@
                         refreshTable();
                     } else if (obj.event === "batchRemove") {
                         batchRemove(obj);
+                    } else if (obj.event === "give") {
+                        give(obj);
                     }
                 });
 
@@ -307,6 +312,17 @@
                         maxmin: true,
                         area: [common.isModile()?"100%":"500px", common.isModile()?"100%":"450px"],
                         content: INSERT_URL
+                    });
+                }
+
+                let give = function() {
+                    layer.open({
+                        type: 2,
+                        title: "发放优惠券",
+                        shade: 0.1,
+                        maxmin: true,
+                        area: [common.isModile()?"100%":"500px", common.isModile()?"100%":"450px"],
+                        content: "/admin/coupon/give"
                     });
                 }
 

@@ -227,7 +227,7 @@ class OrdersController extends Base
      */
     function getDepositList(Request $request)
     {
-        $orders = GoodsOrders::with(['subs'])
+        $orders = GoodsOrders::with(['subs','warehouse'])
             ->where('user_id',$request->user_id)
             ->where('status',9)
             ->where('total_deposit','>',0)
