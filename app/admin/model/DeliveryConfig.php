@@ -2,25 +2,16 @@
 
 namespace app\admin\model;
 
-
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use plugin\admin\app\model\Base;
-use support\Db;
 
 /**
- * 
- *
- * @property int $id 主键
- * @property int $start 开始距离/km
- * @property int $end 结束距离/km
+ * @property integer $id 主键(主键)
+ * @property integer $start 开始距离/km
+ * @property integer $end 结束距离/km
  * @property string $price 价格
- * @property int $weigh 权重
- * @property \Illuminate\Support\Carbon|null $created_at 创建时间
- * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DeliveryConfig newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DeliveryConfig newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DeliveryConfig query()
- * @mixin \Eloquent
+ * @property integer $weigh 权重
+ * @property string $created_at 创建时间
+ * @property string $updated_at 更新时间
  */
 class DeliveryConfig extends Base
 {
@@ -37,6 +28,7 @@ class DeliveryConfig extends Base
      * @var string
      */
     protected $primaryKey = 'id';
-
-
+    
+    
+    
 }
