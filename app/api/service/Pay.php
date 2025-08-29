@@ -54,9 +54,21 @@ class Pay
         return $result;
     }
 
-    #退款
+    /**
+     * 退款
+     * @param $pay_type
+     * @param $pay_amount
+     * @param $order_no
+     * @param $refund_order_no
+     * @param $reason
+     * @return Rocket|Collection
+     * @throws ContainerException
+     * @throws \Yansongda\Artful\Exception\InvalidParamsException
+     * @throws \Yansongda\Artful\Exception\ServiceNotFoundException
+     */
     public static function refund($pay_type, $pay_amount, $order_no, $refund_order_no, $reason)
     {
+        $default = 'UserMiniApp';
         $config = config('payment');
         return match ($pay_type) {
             1 => \Yansongda\Pay\Pay::wechat($config)->refund([
@@ -67,7 +79,8 @@ class Pay
                     'total' => (int)bcmul($pay_amount, 100, 2),
                     'currency' => 'CNY',
                 ],
-                'reason' => $reason
+                'reason' => $reason,
+                '_config' => $default,
             ]),
             default => throw new \Exception('支付类型错误'),
         };

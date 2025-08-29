@@ -2,6 +2,8 @@
 
 namespace app\admin\controller;
 
+use app\api\service\Pay;
+use Carbon\Carbon;
 use support\Request;
 use support\Response;
 use app\admin\model\GoodsOrders;
@@ -90,6 +92,14 @@ class GoodsOrdersController extends Crud
                     //自动派单
                     Client::send('job', ['event' => 'distribute_order', 'id' => $order->id]);
                 }
+            }
+            if (($order->status == 1 || $order->status == 3) && $status == 2){
+                //取消订单退款
+                $refund_order_no = Pay::generateOrderSn();
+                Pay::refund(1, $order->pay_amount, $order->ordersn, $refund_order_no, '取消订单退款');
+                $request->setParams('post',[
+                    'cancel_time'=> Carbon::now()
+                ]);
             }
             return parent::update($request);
         }

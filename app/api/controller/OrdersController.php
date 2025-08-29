@@ -134,8 +134,13 @@ class OrdersController extends Base
         if (!$order) {
             return $this->fail('订单不存在');
         }
-        if ($order->status != 0) {
+        if (!in_array($order->status, [0, 1, 3])) {
             return $this->fail('订单状态错误');
+        }
+        if ($order->status == 1 || $order->status == 3) {
+            //退款
+            $refund_order_no = Pay::generateOrderSn();
+            Pay::refund(1, $order->pay_amount, $order->ordersn, $refund_order_no, '取消订单退款');
         }
         $order->status = 2;
         $order->cancel_time = Carbon::now();
@@ -237,6 +242,11 @@ class OrdersController extends Base
     }
 
 
+    /**
+     * 退押金
+     * @param Request $request
+     * @return \support\Response
+     */
     function refundDeposit(Request $request)
     {
         $id = $request->input('id');

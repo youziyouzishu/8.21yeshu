@@ -99,18 +99,18 @@
                         layui.use(["jquery", "xmSelect"], function() {
                             let value = layui.$("#status").attr("value");
                             let initValue = value ? value.split(",") : [];
-                            let data = [{"value":"0","name":"待支付"},{"value":"1","name":"待商家接单"},{"value":"2","name":"取消"},{"value":"3","name":"待骑手接单"},{"value":"4","name":"待骑手到店"},{"value":"5","name":"待骑手取货"},{"value":"6","name":"配送中"},{"value":"7","name":"配送完成"},{"value":"8","name":"退款成功"},{"value":"9","name":"订单完成"}]
+                            let data = [{"value":"0","name":"待支付"},{"value":"1","name":"待商家接单"},{"value":"2","name":"取消订单"},{"value":"3","name":"待骑手接单"},{"value":"4","name":"待骑手到店"},{"value":"5","name":"待骑手取货"},{"value":"6","name":"配送中"},{"value":"7","name":"配送完成"},{"value":"8","name":"退款成功"},{"value":"9","name":"订单完成"}]
                             if (value === "0"){
                                 data = [{"value":"0","name":"待支付"}]
                             }
                             if (value === "1"){
-                                data = [{"value":"1","name":"待商家接单"},{"value":"3","name":"指派配送员"}]
+                                data = [{"value":"1","name":"待商家接单"},{"value":"3","name":"指派配送员"},{"value":"2","name":"取消订单"}]
                             }
                             if (value === "2"){
                                 data = [{"value":"2","name":"取消"}]
                             }
                             if (value === "3"){
-                                data = [{"value":"3","name":"待骑手接单"}]
+                                data = [{"value":"3","name":"待骑手接单"},{"value":"2","name":"取消订单"}]
                             }
                             if (value === "4"){
                                 data = [{"value":"4","name":"待骑手取货"}]
