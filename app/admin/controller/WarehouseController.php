@@ -29,6 +29,21 @@ class WarehouseController extends Crud
     {
         $this->model = new Warehouse;
     }
+
+    /**
+     * 查询
+     * @param Request $request
+     * @return Response
+     * @throws BusinessException
+     */
+    public function select(Request $request): Response
+    {
+        [$where, $format, $limit, $field, $order] = $this->selectInput($request);
+        $query = $this->doSelect($where, $field, $order)->withCount(['log'=>function ($query) {
+            $query->where('type',1);
+        }]);
+        return $this->doFormat($query, $format, $limit);
+    }
     
     /**
      * 浏览
@@ -86,6 +101,7 @@ class WarehouseController extends Crud
                 'warehouse_id' => $warehouse_id,
             ]);
             $ret->log()->createMany($goods_list);
+            return $this->success('盘点成功');
         }
         $sku = WarehouseSku::with(['goods'])->where('warehouse_id',$warehouse_id)->get();
         return view('warehouse/take',['sku'=>$sku,'warehouse_id'=>$warehouse_id]);

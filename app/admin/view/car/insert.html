@@ -48,6 +48,13 @@
                             <div name="warehouse_id" id="warehouse_id" ></div>
                         </div>
                     </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">类型</label>
+                        <div class="layui-input-block">
+                            <div name="status" id="status" value="0" ></div>
+                        </div>
+                    </div>
                     
                 </div>
             </div>
@@ -104,6 +111,22 @@
                         this.item.prev().val(res.data.url).prev().attr("src", res.data.url);
                     }
                 });
+            });
+
+            layui.use(["jquery", "xmSelect"], function() {
+                let value = layui.$("#status").attr("value");
+                let initValue = value ? value.split(",") : [];
+                layui.xmSelect.render({
+                    el: "#status",
+                    name: "status",
+                    filterable: true,
+                    initValue: initValue,
+                    data: [{"value":"0","name":"未使用"},{"value":"1","name":"使用中"}],
+                    value: "0",
+                    model: {"icon":"hidden","label":{"type":"text"}},
+                    clickClose: true,
+                    radio: true,
+                })
             });
 
             layui.use(["jquery", "xmSelect", "popup"], function () {

@@ -66,6 +66,11 @@ class Warehouse extends Base
     {
         return $this->hasMany(WarehouseSku::class, 'warehouse_id','id');
     }
+
+    function log()
+    {
+        return $this->hasMany(WarehouseSkuLog::class, 'warehouse_id','id');
+    }
     
     
     
